@@ -98,15 +98,37 @@ Identical 4a config. Central value compatible within sqrt(10)-inflated
 uncertainty. Unblinding checklist complete. Produces materials for
 human gate.
 
-**Phase 4c (1-bot):** Methodology approved at 4a/4b; review checks
-execution only. Config frozen. Post-fit diagnostics. Robustness
-(range, binning, cuts, primary vs. secondary). Anomalies documented.
-
 **Phase 5 (5-bot):** AN per `standards/analysis_note.md`. Every
 number traced to `[code:script.py:LN]`. Figures per
 `standards/plotting.md`. PDF clean (margins, refs, captions, 50-100
 pages). Rendering check. BibTeX check. Last automated review before
 VC1.
+
+**Phase 6 (1-bot):** Methodology frozen by human approval; review
+checks execution only. Configuration identical to 4b. Post-fit
+diagnostics on full data. Robustness checks (fit range, binning,
+cuts, primary vs. secondary approach). Any anomaly > 2 sigma from
+expected triggers automatic escalation to 4-bot. Anomalies documented
+with quantitative comparison to 4b results.
+
+**Phase 7 (5-bot):** Final AN updated with full observed results.
+Figures replaced with full-data versions. Flagship figures finalized.
+Same standards as Phase 5: every number traced, figures per plotting
+standards, PDF clean. Rendering and BibTeX checks. Methodology
+sections must be unchanged from Phase 5 draft -- any discrepancy is
+Category A.
+
+**VC1 light (ARC):** All 5 specialists review. Scope limited to
+results integration: full-data numbers correctly inserted, figures
+updated, methodology sections unchanged. Any methodology change from
+the approved draft is Category A. No re-review of selection logic,
+fit model, or systematics unless results raise new concerns.
+
+**VC2 light (Pub):** Reproduce re-executes Phase 6-7 scripts in clean
+environment, diffs outputs. Adversarial re-runs all 6 attacks on full
+data. CrossAnalyst verifies independent analysis compatible with full
+results. Blind checks no post-hoc result steering. Referee confirms
+final AN meets journal standards. Unanimous PASS required.
 
 ---
 
@@ -165,26 +187,30 @@ orchestrator, which may invoke consultation or regress.
 | Phase 3 | Phases 4-5 + VCs | Automatic |
 | Within Phase 4 | Resets human gate | Automatic |
 | Phase 5 | Documentation only | Automatic |
+| Phase 6 | Phase 7 + VC light passes | Automatic (config frozen) |
+| Phase 7 | VC light passes | Automatic (methodology frozen) |
 
 ---
 
 ## 7. Human Gate
 
-After Phase 4b, before 4c. Single mandatory human intervention. No
-automated bypass.
+After VC2 full PASS, before Phase 6. Single mandatory human
+intervention. No automated bypass.
 
-**Presented:** draft AN, unblinding checklist, 4a expected result,
-4b validation result + 4a comparison, all review findings/resolutions,
-open B-items, perturbation results, control region plots.
+**Presented:** draft AN (VC-endorsed, all methodology final with 10%
+results), unblinding checklist, 4a expected result, 4b validation
+result + 4a comparison, all review findings/resolutions, VC1 and VC2
+attestation reports, open B-items, perturbation results, control
+region plots.
 
 | Option | Effect |
 |--------|--------|
-| APPROVE | 4c begins, configuration frozen |
-| ITERATE | Repeat 4b with instructions |
+| APPROVE | Phase 6 begins, methodology frozen |
+| ITERATE | Fix within draft scope, re-review, re-present |
 | REGRESS | Target phase specified, triggers Section 6 |
 | PAUSE | Analysis halts until human resumes |
 
-Decision logged. After APPROVE, any configuration change requires
+Decision logged. After APPROVE, any methodology change requires
 returning through the gate.
 
 ---
