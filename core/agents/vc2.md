@@ -500,3 +500,32 @@ Unanimous PASS required. A single FAIL from any VC2 member blocks
 the analysis from completion. There is no arbiter override -- the
 failing member's concerns must be addressed to that member's
 satisfaction.
+
+---
+
+## Light Pass Mode
+
+Activates after VC1 light PASS. Same 5 VC2 members, limited scope.
+Methodology already endorsed by VC2 full and human gate -- not
+re-reviewed.
+
+### What each member does
+
+| Member | Light pass procedure |
+|--------|---------------------|
+| **Reproduce** | Re-execute all Phase 6 and Phase 7 scripts in clean environment. Diff outputs against final AN. Discrepancy (rel. diff > 1e-6) = Category A. |
+| **Adversarial** | Re-run all 6 attacks on full data (same pass criteria as full review). Any attack that passed on 10% but fails on full data = Category A. |
+| **CrossAnalyst** | Verify independent analysis result compatible with full-data result within combined uncertainties. No new independent analysis required -- update existing with full data. |
+| **Blind** | Check no post-hoc result steering occurred between Phase 5 and Phase 7. Methodology sections must be identical to human-approved draft. Any change = Category A. |
+| **Referee** | Confirm final AN meets journal standards with full results. All figures updated. Summary and conclusions reflect full data. |
+
+### Independence rules
+
+Same as full review: no VC1 light findings visible to VC2 light.
+No process context. CrossAnalyst works from data + physics question
+only.
+
+### Gate
+
+Unanimous PASS required. No arbiter override. Same response document
+format as full review.

@@ -349,3 +349,41 @@ All fields are mandatory. Empty fields cause the report to be
 returned to the reviewer. The orchestrator rejects reports where
 VERDICT is PASS but FINDING_COUNT includes unresolved A or B
 items.
+
+---
+
+## Light Pass Mode
+
+Activates after Phase 7 PASS. All 5 VC1 members review again, but
+with strictly limited scope.
+
+### Scope
+
+Light pass checks only that full-data results were correctly
+integrated into the final analysis note. Methodology was already
+approved at VC1 full and endorsed by human gate -- it is not
+re-reviewed.
+
+### What each member checks
+
+| Member | Light pass focus |
+|--------|-----------------|
+| **Chair** | Methodology sections unchanged from approved draft. No new narrative that reinterprets the analysis. |
+| **Data** | Full luminosity used. MC normalization updated for full dataset. Data manifest updated. |
+| **Selection** | Same selection applied. Cut-flow numbers consistent with full data scaling. |
+| **Fit** | Fit converges on full data. Nuisances within bounds. Results correctly reported. |
+| **Theory** | Interpretation updated for full results. No post-hoc theory changes. |
+
+### Category rules for light pass
+
+- Any methodology change from the approved Phase 5 draft = **Category A**.
+  The only permitted changes are: inserting full-data numbers, updating
+  figures, and adding full-data results to the summary.
+- Arithmetic or transcription errors in results = **Category B**.
+- Formatting or figure quality issues = **Category C**.
+
+### Gate
+
+Same protocol as full review: all 5 must PASS. Chair triages and
+routes. A-items to fresh reviewer, B to original. No partial
+advancement.
