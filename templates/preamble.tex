@@ -1,0 +1,44 @@
+% Standard LaTeX preamble for apexAI analysis notes.
+% This file is included by pandoc via --include-in-header.
+% DO NOT modify this file per-analysis. Supplementary packages
+% go in a per-analysis preamble (analysis_preamble.tex).
+
+% --- Layout and margins ---
+\usepackage[margin=0.75in]{geometry}
+
+% --- Figures ---
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[margin=10pt,font=small,labelfont=bf]{caption}
+
+% --- Float management ---
+\usepackage{placeins}   % \FloatBarrier
+\usepackage{needspace}  % \needspace before headings
+
+% --- Tables ---
+\usepackage{booktabs}
+\usepackage{longtable}
+
+% --- Links and cross-references ---
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{cleveref}
+
+% --- Figure sizing ---
+% Default max height prevents figures from consuming entire pages.
+\setkeys{Gin}{height=0.45\linewidth,keepaspectratio}
+
+% --- Float placement: allow up to 90% of page for floats ---
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.9}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.9}
+
+% --- Paragraph and page breaking ---
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+\widowpenalty=10000
+\clubpenalty=10000
+\raggedbottom
+
+% --- Prevent overfull hbox warnings on tables ---
+\setlength{\emergencystretch}{3em}
