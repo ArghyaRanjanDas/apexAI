@@ -41,8 +41,8 @@ PHASE_TEMPLATE_MAP = {
     "phase3_processing": "phase3.md",
     "phase4_inference": "phase4.md",
     "phase5_draft": "phase5.md",
-    "phase6_fulldata": "phase5.md",  # phases 5-7 share the documentation template
-    "phase7_final": "phase5.md",
+    "phase6_fulldata": "phase6.md",
+    "phase7_final": "phase7.md",
 }
 
 
