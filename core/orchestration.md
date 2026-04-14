@@ -21,6 +21,11 @@ The orchestrator is a thin coordinator. Its job is strictly:
   orchestrator acts on that verdict; it does not second-guess it.
 - **Never skips the human gate.** Phase transitions that require human approval
   (see blinding.md) are blocking.
+- **Never skips a phase.** The full sequence is mandatory:
+  0 → 1 → 2 → 3 → 4a → 4b → 5 → VC1 → VC2 → HUMAN GATE → 6 → 7 →
+  VC1 light → VC2 light. Each phase must produce its gate artifact and
+  pass review before the next begins. If data is pre-provided, Phase 0
+  still runs (verify + manifest).
 
 ---
 

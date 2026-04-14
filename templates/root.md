@@ -53,9 +53,17 @@ after the plan is set.
 5. GATE    -- human gate after VC1+VC2 (Phase 5); advance otherwise
 ```
 
+**Mandatory phase sequence.** Phases execute sequentially: 0 → 1 → 2 →
+3 → 4a → 4b → 5 → VC1 → VC2 → HUMAN GATE → 6 → 7 → VC1 light → VC2
+light. No phase may be skipped, deferred, or consolidated. If the user
+provides data directly, Phase 0 still runs (verify files open, write
+`data_manifest.md`). Each phase must produce its gate artifact and pass
+review before the next phase begins.
+
 **Anti-patterns:**
 - The orchestrator writing analysis scripts itself
-- Running straight from Phase 1 to Phase 5 with no intermediate artifacts
+- Skipping phases or jumping ahead (e.g., Phase 1 straight to Phase 5)
+- Running Phase N before Phase N-1 artifacts exist and are reviewed
 - Using an LLM for format conversion (use pandoc, not an agent)
 - Accepting reviewer PASS too easily (iterate liberally)
 - Spawning subagents without `model: "opus"`
