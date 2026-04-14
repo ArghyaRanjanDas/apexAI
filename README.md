@@ -12,8 +12,10 @@ executes, reviews, and documents a publication-quality measurement or search
 3. **Explores the data** — distributions, invariant mass spectra, feature detection
 4. **Implements selection and corrections** — with closure tests, stress tests, approach comparison
 5. **Extracts results** — staged unblinding (Asimov → 10% validation → full data)
-6. **Writes the analysis note** — 50-100 page publication-quality document with PDF
+6. **Writes the draft analysis note** — 50-100 page publication-quality document with PDF
 7. **Reviews everything twice** — first through tiered multi-agent review (A/B/C classification), then through two independent verification committees (10 specialist reviewers)
+8. **Unblinds on full data** — methodology frozen by human approval, full statistics
+9. **Produces the final analysis note** — updated with full results and flagship figures
 
 Every number comes from code running on data. Never from recalled knowledge.
 
@@ -22,14 +24,16 @@ Every number comes from code running on data. Never from recalled knowledge.
 ```
               ORCHESTRATOR (thin coordinator — never writes code)
                     │
-    ┌───────────────┼───────────────────────────────────────┐
-    ▼               ▼               ▼               ▼       ▼
- Phase 0         Phase 1-3       Phase 4          Phase 5   VC1 + VC2
- Acquire         Build           Measure           Write    Verify
- (Data Eng)      (Executor)      (4a/4b/4c)       (Scribe) (10 reviewers)
-                                    │
-                               HUMAN GATE
-                            (after 10% validation)
+    ┌───────────────┼──────────────────────────────────────────────────┐
+    ▼               ▼               ▼               ▼                  ▼
+ Phase 0         Phase 1-3       Phase 4          Phase 5            VC1 + VC2
+ Acquire         Build           Measure          Draft Note         (full review)
+ (Data Eng)      (Executor)      (4a/4b/4c)       (Scribe)          (10 reviewers)
+                                    │                                  │
+                               HUMAN GATE                          Phase 6-7
+                            (after 10% validation)                 Full Data →
+                                                                   Final Note →
+                                                                   VC1/VC2 light
 ```
 
 **23 agents** organized into five groups:
@@ -45,7 +49,7 @@ Every number comes from code running on data. Never from recalled knowledge.
 apexAI/
 ├── SKILL.md              Skill trigger and workflow overview
 ├── core/                  Framework definition
-│   ├── phases.md          Phase 0-5 specifications and gates
+│   ├── phases.md          Phase 0-7 specifications and gates
 │   ├── review.md          Review tiers, VCs, regression protocol
 │   ├── blinding.md        Staged unblinding protocol
 │   ├── orchestration.md   How the orchestrator coordinates agents
@@ -62,9 +66,9 @@ apexAI/
 │   ├── data_sources.md    Open data portals and download commands
 │   └── multichannel.md    Multi-channel combination
 ├── conventions/           Living operational knowledge per technique
-├── infrastructure/        Agent tools (MemPalace, ralph-loop, etc.)
+├── infrastructure/        Agent tools (MemPalace, ralph-loop, caveman, consultation, suggestions, heuristics)
 ├── scripts/               Executable tooling (scaffold, lint, postprocess)
-└── templates/             Analysis workspace templates (CLAUDE.md per phase)
+└── templates/             Analysis workspace templates (CLAUDE.md per phase, pixi.toml, preamble.tex)
 ```
 
 ## Getting started
@@ -85,7 +89,7 @@ claude   # pass your physics prompt
 For autonomous iteration:
 ```
 /ralph-loop "Execute full analysis + verification pipeline.
-Phase 0-5, then VC1 and VC2. Every number from data."
+Phase 0-7, then VC1 and VC2. Every number from data."
 --max-iterations 40
 --completion-promise "Both verification committees satisfied"
 ```
