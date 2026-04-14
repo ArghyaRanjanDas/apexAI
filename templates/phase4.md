@@ -129,4 +129,5 @@ BibTeX -> Arbiter. A-items block 4b.
 - `techniques/fitting.md` -- model catalog, fit code patterns
 - `techniques/statistics.md` -- significance, limits, GoF, systematics
 - `core/blinding.md` -- staged unblinding protocol
+- `core/agents/execution.md` -- anti-fabrication rules (Section: Anti-fabrication)
 - `conventions/` -- applicable conventions

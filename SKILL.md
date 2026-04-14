@@ -101,7 +101,7 @@ Categories: **A** = blocks advancement, **B** = must fix before PASS, **C** = st
 ### Core framework
 | File | Content |
 |------|---------|
-| `core/phases.md` | Phase 0-5 specs, gates, code examples, validation protocols |
+| `core/phases.md` | Phase 0-7 specs, gates, code examples, validation protocols |
 | `core/review.md` | Review tiers, VC1/VC2 gates, regression, validation targets |
 | `core/blinding.md` | Staged unblinding (Asimov → 10% → full) |
 | `core/orchestration.md` | Coordinator architecture, context assembly, sessions |

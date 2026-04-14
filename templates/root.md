@@ -103,6 +103,10 @@ Read relevant sections from the apexAI framework as needed:
 
 ## Environment
 
+**Data configuration.** Edit `.analysis_config` to set `data_dir` to
+the path where your input ROOT files live. Add extra `allow=` lines
+for additional paths (MC samples, calibration).
+
 This analysis has its own pixi environment defined in `pixi.toml`.
 All scripts must run through pixi:
 
