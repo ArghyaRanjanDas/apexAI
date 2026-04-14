@@ -106,7 +106,7 @@ region, and where validation tests were never actually executed.
 Takes no shortcuts and accepts no hand-waving.
 
 ### Activation
-Phases 1, 3, 4a, 4b, 4c, 5.
+Phases 1, 3, 4a, 4b, 5, 6, 7.
 
 ### Mandatory checks
 
@@ -255,7 +255,7 @@ misleading color scales, experiment labels in the wrong position.
 Treats every figure as if it will appear in a PRL paper.
 
 ### Activation
-Phases 2, 3, 4a, 4b, 4c, 5.
+Phases 2, 3, 4a, 4b, 5, 6, 7.
 
 ### Mode 1: Code Linter
 
@@ -487,13 +487,13 @@ Rows = reviewers, columns = phases. A dot means the reviewer
 is active at that phase.
 
 ```
-                  Ph1   Ph2   Ph3   Ph4a  Ph4b  Ph4c  Ph5
-Physics            *                 *     *           *
-Critical           *           *     *     *     *     *
-Constructive       *                 *     *           *
-Plot Validator           *     *     *     *     *     *
-BibTeX                               *     *           *
-Rendering                                              *
+                  Ph1   Ph2   Ph3   Ph4a  Ph4b  Ph5   Ph6   Ph7
+Physics            *                 *     *     *           *
+Critical           *           *     *     *     *     *     *
+Constructive       *                 *     *     *           *
+Plot Validator           *     *     *     *     *     *     *
+BibTeX                               *     *     *           *
+Rendering                                        *           *
 ```
 
 ### Tier composition (from core/review.md)
@@ -501,7 +501,7 @@ Rendering                                              *
 | Tier | Reviewers | Arbiter | Phases |
 |------|-----------|---------|--------|
 | Self | Executor + Plot Validator | No | 0, 2 |
-| 1-bot | Critical + Plot Validator | No | 3, 4c |
+| 1-bot | Critical + Plot Validator | No | 3, 6 |
 | 4-bot | Physics + Critical + Constructive | Yes | 1 |
 | 4-bot+bib | Physics + Critical + Constructive + Plot Validator + BibTeX | Yes | 4a, 4b |
-| 5-bot | Physics + Critical + Constructive + Plot Validator + BibTeX + Rendering | Yes | 5 |
+| 5-bot | Physics + Critical + Constructive + Plot Validator + BibTeX + Rendering | Yes | 5, 7 |

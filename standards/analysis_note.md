@@ -31,8 +31,8 @@ produces a phase-stamped version; no version is ever overwritten.
 |-------|---------|-------------|
 | 4a (expected) | Complete AN with ALL detail using Asimov/MC results only | `ANALYSIS_NOTE_4a_v{N}.md` |
 | 4b (partial data) | Updated from latest 4a; numbers replaced with 10% data | `ANALYSIS_NOTE_4b_v{N}.md` |
-| 4c (full data) | Updated from latest 4b; all numbers from full dataset | `ANALYSIS_NOTE_4c_v{N}.md` |
-| 5 (final) | Prose polish, typesetting, flagship figure quality pass | `ANALYSIS_NOTE_5_v{N}.md` |
+| 5 (draft) | Prose polish, typesetting, flagship figure quality pass | `ANALYSIS_NOTE_v{N}.md` |
+| 7 (final) | Updated from Phase 5 draft; full observed results from Phase 6 | `ANALYSIS_NOTE_FINAL_v{N}.md` |
 
 Review/fix cycles within a phase increment the version number (v1, v2, ...).
 All versions are preserved on disk for audit and comparison. A reviewer can
@@ -86,7 +86,7 @@ appearing under different names in different sections is Category A.
 When adopting notation from a reference paper, note explicitly if it differs
 from notation used earlier in the AN. When a primary operating point or
 configuration changes between phases (e.g., Phase 4a uses kappa=0.5 but
-Phase 4c uses kappa=0.3), state the change explicitly in the relevant
+Phase 4b uses kappa=0.3), state the change explicitly in the relevant
 results section and update or annotate every earlier occurrence of the old
 label.
 

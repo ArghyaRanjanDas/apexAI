@@ -243,9 +243,12 @@ claims without evidence, no numbers without provenance.
    "expected" and uses Asimov/MC language.
 
 7. **Phase 5 draft.** Complete AN (Sections 1-8) incorporating
-   observed results from Phase 4c. Every change from the 4a draft is
-   logged. Methodology sections are frozen per blinding protocol --
-   only results and summary sections are updated.
+   10% validation results from Phase 4b. Every change from the 4a
+   draft is logged. Full methodology, all systematics, 10% results.
+
+8. **Phase 7 final note.** Update Phase 5 draft with full observed
+   results from Phase 6. Methodology sections are frozen per blinding
+   protocol -- only results and summary sections are updated.
 
 **Anti-hallucination rules.**
 - Never round a number differently than it appears in results.json.
@@ -426,13 +429,13 @@ a decision or artifact from Phase M < N.
 
 ## Phase Activation Table
 
-| Agent | 0 | 1 | 2 | 3 | 4a | 4b | 4c | 5 | VC1 | VC2 |
-|-------|---|---|---|---|----|----|----|----|-----|-----|
-| Data Engineer | P | S | | | | | | | F | |
-| Executor | | P | P | P | P | P | P | S | F | |
-| Note Writer | | | | | P | | | P | F | |
-| Fixer | R | R | R | R | R | R | R | R | R | R |
-| Investigator | | | | T | T | T | T | T | T | T |
+| Agent | 0 | 1 | 2 | 3 | 4a | 4b | 5 | 6 | 7 | VC1 | VC2 |
+|-------|---|---|---|---|----|----|---|---|---|-----|-----|
+| Data Engineer | P | S | | | | | | | | F | |
+| Executor | | P | P | P | P | P | S | P | S | F | |
+| Note Writer | | | | | P | | P | | P | F | |
+| Fixer | R | R | R | R | R | R | R | R | R | R | R |
+| Investigator | | | | T | T | T | T | T | T | T | T |
 
 **Legend:**
 - **P** = Primary agent for this phase
