@@ -6,8 +6,8 @@ Type: {{analysis_type}}
 
 ## Objective
 
-Extract the expected result on simulation (4a) and validate on 10% data
-(4b). Produce machine-readable results and the unblinding checklist.
+Extract expected result on simulation (4a), validate on 10% data (4b).
+Produce machine-readable results and unblinding checklist.
 
 ---
 
@@ -15,12 +15,12 @@ Extract the expected result on simulation (4a) and validate on 10% data
 
 ### Tasks
 
-1. **Build the statistical model** (template fit, counting, etc.) from
-   Phase 3 predictions. See `techniques/fitting.md` for the model catalog
+1. **Build statistical model** (template fit, counting, etc.) from
+   Phase 3 predictions. See `techniques/fitting.md` for model catalog
    and decision tree.
 
 2. **Systematic completeness table.** Every Phase 1 source must appear.
-   Missing source = Category A finding:
+   Missing source = Category A:
 
    | Source | In catalog | Implemented | Effect (up/down) |
    |--------|-----------|-------------|------------------|
@@ -38,10 +38,10 @@ Extract the expected result on simulation (4a) and validate on 10% data
    zero systematics, background-only), Phase 1 traceability.
 
 5. **Perturbation tests:**
-   - Scale pT x1.02 -> mass shifts ~2%
-   - Drop 50% events -> uncertainty grows ~sqrt(2)
-   - Inject fake peak at known location -> fit must find it
-   Each has a PASS criterion. Failure triggers investigation.
+   - Scale pT x1.02 → mass shifts ~2%
+   - Drop 50% events → uncertainty grows ~sqrt(2)
+   - Inject fake peak at known location → fit must find it
+   Each has PASS criterion. Failure triggers investigation.
 
 6. **Fit initialization from data shape.** Peak position from max bin,
    width from FWHM, yield from peak-region integral. Never from textbook.
@@ -72,7 +72,7 @@ Extract the expected result on simulation (4a) and validate on 10% data
 ### Review (4a)
 
 **4-bot+bib.** Physics + Critical + Constructive + Plot Validator +
-BibTeX -> Arbiter. A-items block 4b.
+BibTeX → Arbiter. A-items block 4b.
 
 ---
 

@@ -1,8 +1,6 @@
 # Mempalace -- persistent semantic memory
 
-Persistent knowledge store backed by ChromaDB (vector search) and SQLite
-(structured queries). Gives agents durable memory across sessions without
-relying on conversation context.
+Persistent knowledge store backed by ChromaDB (vector search) and SQLite (structured queries). Gives agents durable memory across sessions without relying on conversation context.
 
 ## Setup
 
@@ -11,7 +9,7 @@ pip install mempalace
 claude mcp add mempalace -- mempalace serve
 ```
 
-The server exposes MCP tools: `store`, `recall`, `list_wings`, `search`.
+Server exposes MCP tools: `store`, `recall`, `list_wings`, `search`.
 
 ## Wing convention
 
@@ -23,12 +21,11 @@ atlas_h_gamgam
 cms_top_ljets
 ```
 
-Wings are isolated. An agent working in one wing cannot accidentally
-read or overwrite another analysis.
+Wings = isolated. Agent in one wing cannot accidentally read or overwrite another analysis.
 
 ## Per-phase storage
 
-Each phase deposits specific entity types into the wing:
+Each phase deposits specific entity types into wing:
 
 | Phase | Stored entities |
 |-------|-----------------|
@@ -43,14 +40,11 @@ Each phase deposits specific entity types into the wing:
 
 ## Knowledge graph entities
 
-- **Datasets**: name, path, luminosity, cross-section, generator, number
-  of events.
+- **Datasets**: name, path, luminosity, cross-section, generator, number of events.
 - **Variables**: branch name, definition, unit, distribution shape notes.
-- **Cuts**: expression, efficiency on signal, efficiency on each
-  background, motivation.
+- **Cuts**: expression, efficiency on signal, efficiency on each background, motivation.
 - **Fit Models**: functional form, parameters, fit range, chi2/ndf.
-- **Systematics**: source, type (shape/norm), size, correlation across
-  channels.
+- **Systematics**: source, type (shape/norm), size, correlation across channels.
 - **Failed Approaches**: what was tried, why it failed, what replaced it.
 
 ## Search patterns
@@ -61,20 +55,12 @@ recall("which systematics affect the b-tagging efficiency")
 recall("why was the ABCD method abandoned")
 ```
 
-The vector search returns the top-k most relevant entries. Structured
-queries filter by entity type, phase, or metadata fields.
+Vector search returns top-k most relevant entries. Structured queries filter by entity type, phase, or metadata fields.
 
 ## Anti-hallucination role
 
-Mempalace stores **reasoning chains** and **measured values** -- numbers
-that came from code running on data in this analysis.
+Mempalace stores **reasoning chains** and **measured values** -- numbers from code running on data in this analysis.
 
-It NEVER stores textbook values as measurements. If an agent recalls a
-cross-section, it must be tagged with the source: either "measured in
-this analysis" or "theory prediction from [reference]". Untagged numbers
-are treated as suspect.
+NEVER stores textbook values as measurements. If agent recalls cross-section → must be tagged with source: either "measured in this analysis" or "theory prediction from [reference]". Untagged numbers = suspect.
 
-Cross-analysis learning accumulates in the mempalace (e.g. "the ABCD
-method fails when the two axes are correlated") but NEVER shortcuts the
-scientific process. A lesson from a prior analysis is a hypothesis to
-test, not a fact to assert.
+Cross-analysis learning accumulates in mempalace (e.g. "ABCD method fails when two axes are correlated") but NEVER shortcuts scientific process. Lesson from prior analysis = hypothesis to test, not fact to assert.

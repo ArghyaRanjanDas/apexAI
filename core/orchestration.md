@@ -1,38 +1,34 @@
 # Orchestrator Coordination Guide
 
-## What the Orchestrator Does
+## What Orchestrator Does
 
-The orchestrator is a thin coordinator. Its job is strictly:
+Orchestrator = thin coordinator. Jobs:
 
-1. **Hold state**: the current prompt, phase summaries, and agent verdicts.
-2. **Spawn subagents**: with curated context, never raw conversation history.
-3. **Read verdicts**: parse each subagent's structured output.
-4. **Commit artifacts**: write validated outputs to the repository.
-5. **Track commitments**: carry forward binding statements from earlier phases.
-6. **Maintain the experiment log**: append every decision, never edit prior entries.
+1. **Hold state**: prompt, phase summaries, agent verdicts.
+2. **Spawn subagents**: curated context, never raw conversation.
+3. **Read verdicts**: parse structured output.
+4. **Commit artifacts**: validated outputs to repo.
+5. **Track commitments**: carry forward binding statements.
+6. **Maintain experiment log**: append every decision, never edit.
 
-## What the Orchestrator Does NOT Do
+## What Orchestrator Does NOT Do
 
-- **Never writes analysis code.** Not a single line. Code is produced by specialist agents.
-- **Never interprets physics results.** It routes results to the appropriate reviewer.
-- **Never holds full subagent context.** After a subagent finishes, its working
-  context is discarded. The orchestrator retains only the summary and verdict.
-- **Never overrides a specialist verdict.** If a validator says FAIL, the
-  orchestrator acts on that verdict; it does not second-guess it.
-- **Never skips the human gate.** Phase transitions that require human approval
-  (see blinding.md) are blocking.
-- **Never skips a phase.** The full sequence is mandatory:
+- **Never writes code.** Not one line. Specialists produce all code.
+- **Never interprets physics.** Routes results to reviewer.
+- **Never holds subagent context.** After return, context discarded. Retains summary + verdict only.
+- **Never overrides verdict.** FAIL = FAIL. No second-guessing.
+- **Never skips human gate.** Blocking per blinding.md.
+- **Never skips a phase.** Mandatory sequence:
   0 → 1 → 2 → 3 → 4a → 4b → 5 → VC1 → VC2 → HUMAN GATE → 6 → 7 →
-  VC1 light → VC2 light. Each phase must produce its gate artifact and
-  pass review before the next begins. If data is pre-provided, Phase 0
-  still runs (verify + manifest).
+  VC1 light → VC2 light. Each phase produces gate artifact + passes
+  review before next begins. Pre-provided data → Phase 0 still runs
+  (verify + manifest).
 
 ---
 
 ## Phase Execution Loop
 
-The orchestrator runs the following loop for each phase in the
-mandatory sequence. This is the core coordination algorithm.
+Core coordination algorithm. Runs for each phase in sequence.
 
 ```
 SEQUENCE = [0, 1, 2, 3, 4a, 4b, 5, VC1_full, VC2_full,
@@ -90,7 +86,7 @@ for phase in SEQUENCE:
       Resume at triggering phase
 ```
 
-### Decision Tree: What To Do After Review
+### Post-Review Decision Tree
 
 ```
 Verdict = PASS, no A/B items?
@@ -116,46 +112,41 @@ Phase = HUMAN GATE and response = REGRESS(N)?
 
 ## Context Assembly
 
-Every subagent receives exactly three layers of context, assembled by the
-orchestrator before spawn. Nothing more, nothing less.
+Subagents get exactly 3 context layers. No more.
 
 ### Layer 1: Bird's-Eye Framing
 
-A short paragraph stating:
-- What analysis this is (process, channel, dataset).
-- What phase we are in.
-- What this agent's specific task is within that phase.
+Short paragraph:
+- Analysis identity (process, channel, dataset).
+- Current phase.
+- Agent's specific task within phase.
 
-### Layer 2: Relevant Methodology Sections
+### Layer 2: Relevant Methodology
 
-Cherry-picked sections from the phase CLAUDE.md that apply to this agent's
-task. The orchestrator does not dump the entire methodology document. It selects
-only the sections the agent needs.
+Cherry-picked sections from phase CLAUDE.md for this agent's task.
+Never dump entire doc. Select only needed sections.
 
 ### Layer 3: Upstream Artifacts
 
-Concrete outputs from prior phases or parallel agents that this agent must
-consume. Examples: a skim file path, a cut table, a BDT model path, a
-systematic variation list.
+Concrete outputs from prior phases/parallel agents. Examples: skim
+path, cut table, BDT model path, systematic variation list.
 
 ### Phase CLAUDE.md
 
-Each phase has a CLAUDE.md file. This is the single document that agents read at
-runtime. The orchestrator assembles it before the phase begins by combining
-methodology references, task definitions, and artifact paths. Agents treat it
-as their complete specification.
+Each phase has CLAUDE.md = single runtime doc. Orchestrator assembles
+before phase: methodology refs + task defs + artifact paths. Agents
+treat as complete spec.
 
 ---
 
 ## Session Identity
 
-Every subagent session gets a random human-readable name (e.g., "cedar-fox",
-"slate-heron"). Naming conventions:
+Every subagent gets random human-readable name (e.g., "cedar-fox").
 
 - Format: `{adjective}-{noun}` or `{material}-{animal}`.
-- Names are unique within a phase.
-- The experiment log references sessions by name, not by internal IDs.
-- Session names appear in artifact commit messages for traceability.
+- Unique within phase.
+- Experiment log references by name, not IDs.
+- Names appear in commit messages for traceability.
 
 ---
 
@@ -175,108 +166,69 @@ Orchestrator                          Subagent
     |-- commits artifact (if PASS)
 ```
 
-Key points:
-- The subagent's working memory is ephemeral. Once it returns, all intermediate
-  state is gone. The orchestrator must not assume it can ask follow-up questions
-  to the same session.
-- The verdict is a structured object (PASS/FAIL/PARTIAL + summary + issues).
-- On FAIL, the orchestrator spawns a new session with the failure summary
-  included in Layer 3 as upstream context.
+- Subagent memory = ephemeral. Post-return, all state gone. No follow-up questions to same session.
+- Verdict = structured (PASS/FAIL/PARTIAL + summary + issues).
+- On FAIL → new session with failure summary in Layer 3.
 
 ---
 
 ## Parallelism Patterns
 
-### When to Parallelize
+### Parallelize when:
 
-Agents are independent when they:
-- Read from the same upstream artifacts but do not write to each other's outputs.
-- Operate on disjoint channels or systematics.
-- Perform validation checks that do not depend on each other's verdicts.
+- Agents read same upstream but write to disjoint outputs.
+- Operating on disjoint channels or systematics.
+- Validation checks independent of each other.
 
-### When to Serialize
+### Serialize when:
 
-Agents must run sequentially when:
-- Agent B consumes Agent A's output artifact.
-- A validator must see a producer's output before the next producer starts.
-- A human gate stands between two phases.
+- Agent B consumes Agent A's output.
+- Validator must see producer output before next producer starts.
+- Human gate between phases.
 
 ### Scaling Rules
 
-1. **Estimate processing time** before choosing serial vs. parallel. A 2-minute
-   task does not need parallelism. A 30-minute-per-channel task across 3
-   channels does.
-2. **Calibrate on a small sample first.** Before launching N parallel agents,
-   run one agent on a reduced sample to verify the task definition is correct.
-   Fix issues cheaply before scaling.
-3. **Cap concurrent agents.** No more than 5 parallel subagents at once. Beyond
-   that, the orchestrator's ability to track verdicts degrades.
+1. Estimate time before choosing serial vs. parallel. 2-min task = no parallelism. 30-min/channel × 3 channels = parallelize.
+2. Calibrate on small sample first. Run 1 agent on reduced sample → verify task def → then scale.
+3. Cap at 5 concurrent subagents. Beyond that, verdict tracking degrades.
 
 ### Concrete Patterns
 
-**Pattern: VC1 (Validation Campaign 1)**
-All 5 validators launch in parallel. Each validates one independent aspect
-(selection, background model, systematics, signal extraction, limit setting).
-The orchestrator waits for all 5 verdicts before proceeding.
+**VC1:** 5 validators parallel. Each validates one aspect. Wait for all 5.
 
-**Pattern: VC2 (Validation Campaign 2)**
-Same as VC1 but for a different phase milestone. Same 5-parallel structure,
-different validation criteria loaded via Layer 2.
+**VC2:** Same structure, different criteria via Layer 2. Strict isolation.
 
-**Pattern: Phase 7 Validator with Sub-Agents**
-The Phase 7 validator itself spawns 3 sub-agents (one per channel: tauhtauh,
-taumutauh, tauetauh). The validator collects sub-verdicts and synthesizes a
-single verdict for the orchestrator. The orchestrator sees one verdict, not
-three.
+**Phase 7 sub-agents:** Validator spawns 3 sub-agents (one per channel). Collects sub-verdicts → single verdict to orchestrator.
 
-**Pattern: Serial Producer Chain**
-Skim agent -> Selection agent -> BDT agent -> Limit agent. Each waits for
-the previous to finish and pass.
+**Serial chain:** Skim → Selection → BDT → Limit. Each waits for prior PASS.
 
 ---
 
 ## Binding Commitment Tracking
 
-Any definitive statement made in Phase N is a **binding commitment** in all
-subsequent phases. Examples:
-- "We use DeepTau v2p5 as the tau ID discriminant." (Phase 1)
-- "QCD is estimated from data using the ABCD method." (Phase 2)
-- "The bb invariant mass window is [90, 150] GeV." (Phase 3)
+Definitive statement in Phase N = **binding commitment** in all subsequent phases. Examples:
+- "DeepTau v2p5 as tau ID discriminant." (Phase 1)
+- "QCD estimated via ABCD method." (Phase 2)
+- "bb invariant mass window [90, 150] GeV." (Phase 3)
 
-Tracking rules:
-1. The orchestrator maintains a list of binding commitments, tagged by the
-   phase and session that produced them.
-2. At each phase transition, the orchestrator checks: are all prior commitments
-   still fulfilled in the current artifacts?
-3. An unfulfilled commitment is a **Category A defect**: the phase cannot
-   proceed until it is resolved (either the commitment is fulfilled or
-   explicitly revised with justification logged).
-4. Revising a commitment requires re-validation of all downstream phases that
-   depended on it.
+Rules:
+1. Orchestrator maintains commitment list, tagged by phase + session.
+2. At each transition → check all prior commitments still fulfilled.
+3. Unfulfilled commitment = **Category A**. Phase blocked until resolved or explicitly revised with justification.
+4. Revising commitment → re-validate all downstream phases that depend on it.
 
 ---
 
 ## Experiment Log
 
-The experiment log is the single source of truth for what happened, when, and
-why. It is append-only.
+Single source of truth. Append-only.
 
-Each entry contains:
-- Timestamp
-- Session name
-- Phase
-- Action taken
-- Verdict (if applicable)
-- Rationale (one sentence)
+Each entry: timestamp, session name, phase, action, verdict (if applicable), rationale (one sentence).
 
-Rules:
-- **Append-only.** No edits to prior entries. If a decision is reversed, a new
-  entry records the reversal and references the original entry.
-- **Every spawn is logged.** Including the context layers provided.
-- **Every verdict is logged.** Including FAIL verdicts and the subsequent
-  corrective action.
-- **Human gate decisions are logged verbatim.** The arbiter's exact response
-  (APPROVE / ITERATE / REGRESS(N) / PAUSE) and any accompanying notes.
+- **Append-only.** Reversals = new entry referencing original.
+- **Every spawn logged.** Including context layers.
+- **Every verdict logged.** Including FAILs + corrective action.
+- **Human gate decisions verbatim.** Exact response + notes.
 
 ---
 

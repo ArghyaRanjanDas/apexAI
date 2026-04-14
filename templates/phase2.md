@@ -6,9 +6,9 @@ Type: {{analysis_type}}
 
 ## Objective
 
-Plot every variable, detect features, form physics hypotheses, and
-assess data quality -- before any selection. No cuts applied in this
-phase (except basic data quality if needed).
+Plot every variable, detect features, form physics hypotheses, assess
+data quality -- before any selection. No cuts applied (except basic
+data quality if needed).
 
 ---
 
@@ -69,7 +69,7 @@ phase (except basic data quality if needed).
 
 ### 2c. Physics Interpretation
 
-9. **Compare peaks to the mass table:**
+9. **Compare peaks to mass table:**
 
    | Particle | Mass (GeV) | Decays |
    |----------|-----------|--------|
@@ -83,21 +83,21 @@ phase (except basic data quality if needed).
    | H | 125.25 | bb, WW, tautau |
    | top | 172.7 | Wb |
 
-   Peak within 3% of a known mass -> strong candidate. Otherwise evaluate
+   Peak within 3% of known mass → strong candidate. Otherwise evaluate
    instrumental artifacts (trigger turn-on, detector gaps, reconstruction
    zeros, combinatorics) and statistical fluctuations. See
-   `techniques/fitting.md` for the complete mass table.
+   `techniques/fitting.md` for complete mass table.
 
-10. **Form physics hypotheses.** For each feature, propose a physics
-    explanation and an instrumental explanation. Record both.
+10. **Form physics hypotheses.** Per feature, propose physics
+    explanation and instrumental explanation. Record both.
 
 ### 2d. Variable Ranking
 
 11. **Rank variables by separation power.** Signal/background chi2/ndf
-    per variable. chi2/ndf > 5 -> investigate (powerful discriminant
+    per variable. chi2/ndf > 5 → investigate (powerful discriminant
     or poor modeling).
 
-12. **MVA input check.** Data/MC chi2/ndf > 5 in any control region ->
+12. **MVA input check.** Data/MC chi2/ndf > 5 in any control region →
     variable flagged, cannot enter MVA without remediation.
 
 ---

@@ -11,12 +11,12 @@ Format / Feasibility / Pixi Reference / Git
 
 ## Execution Model
 
-**You are the orchestrator.** You do NOT write analysis code yourself. You
-spawn subagents for all code, figures, and prose. Your context stays small;
-heavy work happens in subagent contexts.
+**You = orchestrator.** Never write analysis code yourself. Spawn
+subagents for all code, figures, prose. Context stays small; heavy
+work → subagent contexts.
 
-**Progress tracking (mandatory).** Before any phase work, create a task
-list showing all phases with their execution pipeline and review tier:
+**Progress tracking (mandatory).** Before any phase work, create task
+list showing all phases with execution pipeline and review tier:
 
 ```
 Phase 0: Acquire         -- data engineer + self-review
@@ -35,15 +35,13 @@ Phase 7: Final Note      -- note writer + typesetter + 5-bot review
    VC2: Light Pass       -- reproducibility + adversarial
 ```
 
-Mark each phase complete as it finishes. This gives the human visibility
-into progress.
+Mark each phase complete as it finishes → human visibility into progress.
 
-**All executor subagents start in plan mode.** When spawning an executor,
-instruct it to first produce a plan: what scripts it will write, what
-figures it will produce, what the artifact structure will be. Execute only
-after the plan is set.
+**All executor subagents start in plan mode.** Spawn executor → it
+first produces plan: scripts to write, figures to produce, artifact
+structure. Execute only after plan set.
 
-**The orchestrator loop for each phase:**
+**Orchestrator loop per phase:**
 
 ```
 1. EXECUTE -- spawn executor with phase CLAUDE.md + upstream artifacts
@@ -55,31 +53,31 @@ after the plan is set.
 
 **Mandatory phase sequence.** Phases execute sequentially: 0 → 1 → 2 →
 3 → 4a → 4b → 5 → VC1 → VC2 → HUMAN GATE → 6 → 7 → VC1 light → VC2
-light. No phase may be skipped, deferred, or consolidated. If the user
-provides data directly, Phase 0 still runs (verify files open, write
-`data_manifest.md`). Each phase must produce its gate artifact and pass
-review before the next phase begins.
+light. No skipping, deferring, or consolidating. If user provides data
+directly, Phase 0 still runs (verify files open, write
+`data_manifest.md`). Each phase must produce gate artifact and pass
+review before next phase begins.
 
 **Anti-patterns:**
-- The orchestrator writing analysis scripts itself
+- Orchestrator writing analysis scripts itself
 - Skipping phases or jumping ahead (e.g., Phase 1 straight to Phase 5)
-- Running Phase N before Phase N-1 artifacts exist and are reviewed
-- Using an LLM for format conversion (use pandoc, not an agent)
+- Running Phase N before Phase N-1 artifacts exist and pass review
+- Using LLM for format conversion (use pandoc, not agent)
 - Accepting reviewer PASS too easily (iterate liberally)
 - Spawning subagents without `model: "opus"`
 
-**What the orchestrator MUST do:**
-- Log the initial prompt to `prompt.md` before any phase work
+**Orchestrator MUST:**
+- Log initial prompt to `prompt.md` before any phase work
 - Commit before spawning each subagent
-- Ensure review quality -- do not conserve tokens by accepting weak reviews
+- Ensure review quality -- never conserve tokens by accepting weak reviews
 - Trigger phase regression when review finds physics issues from earlier phases
-- Run the regression checklist after every review verdict
+- Run regression checklist after every review verdict
 
 ---
 
 ## Methodology
 
-Read relevant sections from the apexAI framework as needed:
+Read relevant sections from apexAI framework as needed:
 
 | Topic | File | When |
 |-------|------|------|
@@ -103,12 +101,11 @@ Read relevant sections from the apexAI framework as needed:
 
 ## Environment
 
-**Data configuration.** Edit `.analysis_config` to set `data_dir` to
-the path where your input ROOT files live. Add extra `allow=` lines
-for additional paths (MC samples, calibration).
+**Data configuration.** Edit `.analysis_config` → set `data_dir` to
+input ROOT files path. Add extra `allow=` lines for additional paths
+(MC samples, calibration).
 
-This analysis has its own pixi environment defined in `pixi.toml`.
-All scripts must run through pixi:
+Own pixi environment defined in `pixi.toml`. All scripts run through pixi:
 
 ```bash
 pixi run py path/to/script.py          # run a script
@@ -116,19 +113,19 @@ pixi run py -c "import uproot; ..."     # quick check
 pixi shell                              # interactive shell
 ```
 
-**Never use bare `python`, `pip install`, or `conda`.** If you need a
-package, add it to `pixi.toml` and run `pixi install`.
+**Never use bare `python`, `pip install`, or `conda`.** Need package →
+add to `pixi.toml`, run `pixi install`.
 
 ---
 
 ## Numeric Constants: Never From Memory
 
-Every number that enters the analysis must come from a citable source.
+Every number entering analysis must come from citable source.
 PDG masses, widths, coupling constants, world-average measurements --
-all must be fetched from the RAG corpus, web, or a cited paper.
+all fetched from RAG corpus, web, or cited paper.
 
-LLM training data is NOT a source. At review, any uncited numeric
-constant is Category A.
+LLM training data = NOT a source. At review, uncited numeric
+constant = Category A.
 
 ---
 
@@ -153,8 +150,8 @@ Optional: `coffea`, `fastjet`, `iminuit`, `xgboost`, `scikit-learn`.
 
 ## Phase Gates
 
-Every phase must produce its written artifact on disk before the next
-phase begins. No exceptions.
+Every phase must produce written artifact on disk before next phase
+begins. No exceptions.
 
 | Phase | Required artifact | Review tier |
 |-------|-------------------|-------------|
@@ -169,20 +166,20 @@ phase begins. No exceptions.
 | 7 | `phase7_final/outputs/ANALYSIS_NOTE_FINAL.{md,tex,pdf}` | 5-bot |
 
 **Review before advancing.** After each artifact, spawn reviewer subagents.
-Self-review is only acceptable for Phase 0 and 2.
+Self-review only acceptable for Phase 0 and 2.
 
-**Experiment log.** Append to `experiment_log.md` throughout. An empty
-experiment log at the end of a phase is a process failure.
+**Experiment log.** Append to `experiment_log.md` throughout. Empty
+experiment log at end of phase = process failure.
 
 ---
 
 ## Review Protocol
 
-See `core/review.md` for the full protocol. Key rules:
+See `core/review.md` for full protocol. Key rules:
 
 **Classification:**
 - **(A) Must resolve** -- blocks advancement, fresh re-review
-- **(B) Must fix before PASS** -- weakens the analysis
+- **(B) Must fix before PASS** -- weakens analysis
 - **(C) Suggestion** -- arbiter decides
 
 | Phase | Review tier |
@@ -200,18 +197,18 @@ See `core/review.md` for the full protocol. Key rules:
 **Iteration limits:** 4/5-bot: warn at 3, strong warn at 5, hard cap at 10.
 1-bot: warn at 2, escalate after 3.
 
-**Validation target rule:** Any result with pull > 3 sigma from a
-well-measured reference value (PDG, published) is Category A unless
-the reviewer verifies a quantitative explanation.
+**Validation target rule:** Result with pull > 3 sigma from well-measured
+reference (PDG, published) = Category A unless reviewer verifies
+quantitative explanation.
 
 ---
 
 ## Phase Regression
 
-When a reviewer at Phase N finds a physics issue traceable to Phase M < N,
-this triggers regression.
+Reviewer at Phase N finds physics issue traceable to Phase M < N →
+triggers regression.
 
-**Mandatory triggers (must not be rationalized away):**
+**Mandatory triggers (must not rationalize away):**
 - Data/MC disagreement on observable or MVA inputs
 - Closure test failure (p < 0.05) without 3+ remediation attempts
 - Single systematic > 80% of total uncertainty
@@ -219,15 +216,15 @@ this triggers regression.
 - GoF toys inconsistent with observed chi2
 - >50% bins excluded from fit
 
-**Procedure:** Investigator traces root cause -> REGRESSION_TICKET.md ->
-fix origin phase -> re-run downstream -> resume review.
+**Procedure:** Investigator traces root cause → REGRESSION_TICKET.md →
+fix origin phase → re-run downstream → resume review.
 
 ---
 
 ## Human Gate Protocol
 
-After Phase 5 VC1 and VC2 reviews pass, the orchestrator halts and presents
-the complete package to human physicists:
+After Phase 5 VC1 and VC2 pass, orchestrator halts and presents
+complete package to human physicists:
 
 **Materials presented:**
 - Draft AN (VC-endorsed, all methodology final) with 10% results
@@ -245,21 +242,21 @@ the complete package to human physicists:
 | REGRESS(N) | Return to Phase N; re-traverse to gate |
 | PAUSE | Halt for external input |
 
-No automated bypass. After APPROVE, any methodology change requires
-returning through the gate.
+No automated bypass. After APPROVE, methodology change requires
+returning through gate.
 
 ---
 
 ## Coding Rules
 
 - **Columnar analysis.** Arrays + boolean masks, not event loops.
-- **Prototype on a slice.** ~1000 events first, full data for production.
-- **No bare `print()`.** Use `logging` + `rich`. Ruff T201 enforces this.
+- **Prototype on slice.** ~1000 events first, full data for production.
+- **No bare `print()`.** Use `logging` + `rich`. Ruff T201 enforces.
 - **Conventional commits.** `<type>(phase): <description>`.
-- **Scripts as pixi tasks.** Every script gets a named task in `pixi.toml`.
+- **Scripts as pixi tasks.** Every script gets named task in `pixi.toml`.
 - **KISS / YAGNI.** No CLIs, config systems, or plugin architectures.
-- **Output paths via `__file__`.** Resolve relative to the script location,
-  not the current working directory.
+- **Output paths via `__file__`.** Resolve relative to script location,
+  not current working directory.
 
 Standard logging setup:
 ```python
@@ -280,7 +277,7 @@ See `standards/coding.md` for full coding practices.
 
 ## Scale-Out Rules
 
-Estimate before running at full scale: input size, per-event cost on a
+Estimate before full-scale run: input size, per-event cost on
 1000-event slice, peak memory.
 
 | Estimated time | Action |
@@ -300,7 +297,7 @@ See `standards/plotting.md` for full standards. Essentials:
   `mh.label.exp_label(exp="<EXPERIMENT>", data=True, llabel="Open Data", loc=0, ax=ax)`
 - **Figure size:** `figsize=(10, 10)` for all plots.
 - **Ratio plots:** `sharex=True` and `fig.subplots_adjust(hspace=0)`.
-- **No titles.** Never `ax.set_title()`. Captions go in the AN.
+- **No titles.** Never `ax.set_title()`. Captions go in AN.
 - **No absolute font sizes.** Use stylesheet or `'x-small'`.
 - **Save as PDF + PNG.** `bbox_inches="tight"`, `dpi=200`, `transparent=True`.
 - **Histograms via `mh.histplot`.** Never `ax.bar()` or `ax.step()`.
@@ -316,24 +313,24 @@ Read applicable files in `conventions/` at three mandatory checkpoints:
 
 1. **Phase 1 (Strategy):** Read all conventions. Enumerate every source with
    "Will implement" or "Not applicable because [reason]."
-2. **Phase 4a (Inference):** Re-read conventions before finalizing systematics.
+2. **Phase 4a (Inference):** Re-read before finalizing systematics.
    Produce completeness table comparing against conventions AND references.
 3. **Phase 5 (Draft):** Final conventions check -- verify everything
-   required is present in the AN.
+   required present in AN.
 
 ---
 
 ## Analysis Note Format
 
-**The gold standard:** a physicist who has never seen the analysis should
-be able to reproduce every number from the AN alone. If they need to read
-the code, the AN has a gap. Target 50-100 pages; under 30 is Category A.
+**Gold standard:** physicist who never saw analysis should reproduce
+every number from AN alone. Need to read code → AN has gap. Target
+50-100 pages; under 30 = Category A.
 
-See `standards/analysis_note.md` for the full specification including
+See `standards/analysis_note.md` for full specification including
 required sections, statistical methodology standards, validation
-documentation, and the pre-submission checklist.
+documentation, and pre-submission checklist.
 
-The AN must be pandoc-compatible markdown:
+AN must be pandoc-compatible markdown:
 - LaTeX math: `$...$` inline, `$$...$$` display
 - Figures: `![Caption](figures/name.pdf)`
 - Tables: pipe tables
@@ -344,8 +341,8 @@ The AN must be pandoc-compatible markdown:
 
 ## Feasibility Evaluation
 
-When the analysis encounters a limitation, do not silently downscope.
-See `standards/downscoping.md` for the evaluation protocol.
+Analysis encounters limitation → do not silently downscope.
+See `standards/downscoping.md` for evaluation protocol.
 
 ---
 
@@ -371,12 +368,12 @@ select = "python phase3_processing/src/apply_selection.py"
 **Pitfalls:**
 - PyPI packages go in `[pypi-dependencies]`, NOT `[dependencies]`
 - After editing `pixi.toml`, run `pixi install`
-- Task values are shell command strings; chain with `&&`
+- Task values = shell command strings; chain with `&&`
 
 ---
 
 ## Git
 
-This analysis has its own git repository (initialized by the scaffolder).
-Commit work within this directory. Do not modify files outside this
-directory. The apexAI framework repository is separate.
+Own git repository (initialized by scaffolder). Commit work within
+this directory. Never modify files outside. apexAI framework
+repository = separate.

@@ -2,10 +2,10 @@
 
 ## Significance and Hypothesis Testing
 
-In HEP, a measurement tests the null hypothesis H0 (background only) against an alternative H1 (signal + background).
+HEP measurement tests null hypothesis H0 (background only) against alternative H1 (signal + background).
 
-- **p-value**: probability of observing data at least as extreme as measured, assuming H0 is true
-- **Significance (sigma)**: number of standard deviations in a one-sided Gaussian tail corresponding to the p-value
+- **p-value** = probability of observing data at least as extreme as measured, assuming H0 true
+- **Significance (sigma)** = number of standard deviations in one-sided Gaussian tail corresponding to p-value
 
 ### Conventions
 
@@ -30,11 +30,11 @@ def sigma_to_p(sigma):
 
 ## Likelihood Ratio Test (Wilks' Theorem)
 
-When comparing nested models (H0 is a special case of H1), the test statistic is:
+Comparing nested models (H0 = special case of H1), test statistic:
 
 q = 2 * (NLL_H0 - NLL_H1)
 
-where NLL is the negative log-likelihood. Under H0, q is asymptotically chi2-distributed with degrees of freedom equal to the difference in number of parameters.
+NLL = negative log-likelihood. Under H0, q asymptotically chi2-distributed with degrees of freedom = difference in parameter count.
 
 ```python
 from scipy.stats import chi2
@@ -52,7 +52,7 @@ def likelihood_ratio_test(nll_h0, nll_h1, delta_npar):
 
 ## Counting Significance (Asimov Approximation)
 
-For counting experiments where you observe s signal events over b background events, use the Asimov formula instead of naive s/sqrt(b):
+For counting experiments with s signal events over b background events, use Asimov formula instead of naive s/sqrt(b):
 
 ```python
 import numpy as np
@@ -68,11 +68,11 @@ def asimov_significance(s, b):
     return np.sqrt(q)
 ```
 
-Note: s/sqrt(b) is the limiting case when s << b. Always prefer the Asimov formula.
+Note: s/sqrt(b) = limiting case when s << b. Always prefer Asimov formula.
 
 ## Look-Elsewhere Effect
 
-When searching over a range for a signal, the probability of finding a fluctuation anywhere is higher than at a specific pre-defined location.
+Searching over range for signal → probability of finding fluctuation anywhere > probability at specific pre-defined location.
 
 ```python
 def global_significance(local_p, search_range, resolution):
@@ -89,7 +89,7 @@ def global_significance(local_p, search_range, resolution):
     return global_p
 ```
 
-The number of independent trials is approximate. For a rigorous treatment, see the Gross-Vitells method (Eur.Phys.J. C70 (2010) 525) which uses the upcrossing approach.
+Number of independent trials = approximate. For rigorous treatment, see Gross-Vitells method (Eur.Phys.J. C70 (2010) 525) using upcrossing approach.
 
 ## Confidence Intervals
 
@@ -111,7 +111,7 @@ def symmetric_confidence_interval(popt, pcov, param_index, cl=0.6827):
 
 ### Profile Likelihood (Asymmetric)
 
-When errors are asymmetric, scan the negative log-likelihood as a function of the parameter of interest, profiling (minimizing) over all other parameters.
+Errors asymmetric → scan negative log-likelihood as function of parameter of interest, profiling (minimizing) over all other parameters.
 
 ```python
 def profile_likelihood_interval(nll_func, best_val, scan_range, npoints=200, cl=0.6827):
@@ -262,11 +262,11 @@ def ks_test(data1, data2):
 
 ### Analytic (Jacobian Method)
 
-If a derived quantity f depends on fitted parameters theta with covariance C, then:
+Derived quantity f depends on fitted parameters theta with covariance C:
 
 Var(f) = J @ C @ J^T
 
-where J is the Jacobian (partial derivatives of f with respect to theta).
+J = Jacobian (partial derivatives of f w.r.t. theta).
 
 ```python
 def propagate_errors_analytic(jacobian, covariance):
@@ -283,7 +283,7 @@ def propagate_errors_analytic(jacobian, covariance):
 
 ### Numerical (Toy MC)
 
-When the function is complex or non-linear, sample parameter variations from the covariance matrix.
+Function complex or non-linear → sample parameter variations from covariance matrix.
 
 ```python
 def propagate_errors_toys(func, popt, pcov, n_toys=1000):
@@ -304,9 +304,9 @@ def propagate_errors_toys(func, popt, pcov, n_toys=1000):
 
 For each systematic source:
 
-1. Vary the source by +1 sigma and -1 sigma from its nominal value
-2. Re-run the full analysis chain with the varied input
-3. Take the difference from the nominal result as the systematic uncertainty
+1. Vary source by +1 sigma and -1 sigma from nominal
+2. Re-run full analysis chain with varied input
+3. Difference from nominal = systematic uncertainty
 
 ### Combining Systematics
 

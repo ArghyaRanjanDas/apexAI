@@ -1,25 +1,25 @@
 # apexAI — Autonomous Physics Experiment with AI
 
-An agent framework for autonomous high energy physics analysis. Given a
-physics prompt and collision data (or just an experiment name), apexAI plans,
-executes, reviews, and documents a publication-quality measurement or search
-— from raw ROOT files to a typeset analysis note with full uncertainty budget.
+Agent framework for autonomous high energy physics analysis. Given physics
+prompt + collision data (or just experiment name), apexAI plans, executes,
+reviews, documents publication-quality measurement or search — raw ROOT files
+→ typeset analysis note with full uncertainty budget.
 
 ## What it does
 
 1. **Finds and acquires data** from open-data portals (ATLAS, CMS, LEP, Belle, etc.)
-2. **Plans the analysis** — backgrounds, systematics, selection approaches, flagship figures
-3. **Explores the data** — distributions, invariant mass spectra, feature detection
-4. **Implements selection and corrections** — with closure tests, stress tests, approach comparison
+2. **Plans analysis** — backgrounds, systematics, selection approaches, flagship figures
+3. **Explores data** — distributions, invariant mass spectra, feature detection
+4. **Implements selection and corrections** — closure tests, stress tests, approach comparison
 5. **Extracts results** — staged unblinding (Asimov → 10% validation)
-6. **Writes the draft analysis note** — 50-100 page publication-quality document with PDF
+6. **Writes draft analysis note** — 50-100 page publication-quality document with PDF
 7. **Reviews everything twice** — tiered multi-agent review (A/B/C classification), then two independent verification committees (VC1: 5 ARC specialists, VC2: 5 independent reviewers)
-8. **Human gate** — multiple humans judge the AI-verified, VC-endorsed package; methodology frozen on approval
-9. **Unblinds on full data** — full statistics with frozen methodology
-10. **Produces the final analysis note** — updated with full results and flagship figures
-11. **Light VC passes** — VC1 checks results integration, VC2 verifies reproducibility and runs adversarial tests on full data
+8. **Human gate** — multiple humans judge AI-verified, VC-endorsed package; methodology frozen on approval
+9. **Unblinds on full data** — full statistics, frozen methodology
+10. **Produces final analysis note** — updated with full results + flagship figures
+11. **Light VC passes** — VC1 checks results integration, VC2 verifies reproducibility + adversarial tests on full data
 
-Every number comes from code running on data. Never from recalled knowledge.
+Every number from code running on data. Never from recalled knowledge.
 
 ## Architecture
 
@@ -80,7 +80,7 @@ Every number comes from code running on data. Never from recalled knowledge.
                                               analysis note
 ```
 
-**23 agents** organized into five groups:
+**23 agents** in five groups:
 - **Execution** (5): Data Engineer, Executor, Note Writer, Fixer, Investigator
 - **Review** (6): Physics, Critical, Constructive, Plot Validator, BibTeX, Rendering
 - **Adjudication** (2): Arbiter, Typesetter
@@ -154,10 +154,10 @@ pixi install
 claude
 ```
 
-The scaffolder creates 8 phase directories (`phase0_acquire` through
+Scaffolder creates 8 phase directories (`phase0_acquire` through
 `phase7_final`), each with `outputs/`, `src/`, `review/`, `logs/`
-subdirs. It also generates a root `CLAUDE.md` (orchestrator instructions),
-per-phase `CLAUDE.md` files, a `pixi.toml`, `.analysis_config`,
+subdirs. Also generates root `CLAUDE.md` (orchestrator instructions),
+per-phase `CLAUDE.md` files, `pixi.toml`, `.analysis_config`,
 and experiment/retrieval logs.
 
 For autonomous iteration:
@@ -168,17 +168,16 @@ For autonomous iteration:
 ## Provenance
 
 apexAI synthesizes ideas from two complementary frameworks:
-- An experiment-agnostic HEP discovery agent with perturbation tests, dual
-  verification committees, and persistent semantic memory
-- JFC (Just Furnish Context, arxiv 2603.20179) — a formal phased methodology
-  with tiered multi-agent review, phase regression, and living conventions
+- Experiment-agnostic HEP discovery agent with perturbation tests, dual
+  verification committees, persistent semantic memory
+- JFC (Just Furnish Context, arxiv 2603.20179) — formal phased methodology
+  with tiered multi-agent review, phase regression, living conventions
 
-Neither source was copied. Every file was written from scratch as a genuine
-synthesis, organized by what a physicist needs rather than by where the idea
-originated.
+Neither source copied. Every file written from scratch as genuine synthesis,
+organized by what physicist needs, not by where idea originated.
 
 ## Requirements
 
 - [pixi](https://pixi.sh) for environment management
-- [Claude Code](https://claude.ai/claude-code) as the agent runtime
+- [Claude Code](https://claude.ai/claude-code) as agent runtime
 - Python >= 3.11

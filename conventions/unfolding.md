@@ -2,100 +2,49 @@
 
 ## When this applies
 
-Any analysis that corrects a measured distribution from detector level
-to particle level (or parton level). Includes differential cross-section
-measurements, normalized distributions, and double-differential spectra.
-Applies regardless of whether the correction uses bin-by-bin factors,
-matrix inversion, iterative Bayesian, SVD, or ML-based methods.
+Any analysis correcting measured distribution from detector level to particle level (or parton level). Includes differential cross-section measurements, normalized distributions, double-differential spectra. Applies regardless of correction method: bin-by-bin factors, matrix inversion, iterative Bayesian, SVD, or ML-based.
 
 ## Standard configuration
 
-- **Particle-level definition**: must be stated explicitly with a
-  complete object and phase-space definition before any correction is
-  applied. This fiducial definition should be close to the detector-level
-  selection to minimize model dependence.
-- **Correction procedure**: the default is regularized matrix inversion.
-  A second independent method (e.g. iterative Bayesian or bin-by-bin)
-  must be performed as a cross-check. If the two methods disagree by more
-  than half the statistical uncertainty in any bin, investigate before
-  proceeding.
-- **Covariance matrix**: the full statistical covariance matrix of the
-  unfolded result must be provided. Construct it from pseudo-experiments
-  (bootstrap or toy MC), not from the diagonal of the response matrix
-  alone.
-- **Regularization**: the regularization strength must be chosen by a
-  data-driven criterion (e.g. L-curve, minimizing the average global
-  correlation coefficient). The choice and its sensitivity must be
-  documented.
+- **Particle-level definition**: must be stated explicitly with complete object and phase-space definition before any correction applied. Fiducial definition should be close to detector-level selection → minimize model dependence.
+- **Correction procedure**: default = regularized matrix inversion. Second independent method (e.g. iterative Bayesian or bin-by-bin) required as cross-check. If two methods disagree by more than half statistical uncertainty in any bin → investigate before proceeding.
+- **Covariance matrix**: full statistical covariance matrix of unfolded result must be provided. Construct from pseudo-experiments (bootstrap or toy MC), not from diagonal of response matrix alone.
+- **Regularization**: strength chosen by data-driven criterion (e.g. L-curve, minimizing average global correlation coefficient). Choice and sensitivity must be documented.
 
 ## Required systematic sources
 
-- **Response matrix statistics**: finite MC sample size in each cell of
-  the response matrix. Propagate via bootstrap of the response matrix.
-- **Physics model dependence**: reweight the MC used to build the
-  response matrix to an alternative truth spectrum and repeat the
-  unfolding. The difference is a systematic.
-- **Detector systematics**: JES, JER, lepton scale factors, b-tagging,
-  pileup -- propagate each through the full unfolding chain (not just
-  through the efficiency correction).
-- **Background subtraction**: vary each background within its uncertainty
-  before unfolding and propagate the effect.
-- **Regularization strength**: vary the regularization parameter within
-  a reasonable range and include the variation as a systematic.
+- **Response matrix statistics**: finite MC sample size in each cell. Propagate via bootstrap of response matrix.
+- **Physics model dependence**: reweight MC used to build response matrix to alternative truth spectrum → repeat unfolding. Difference = systematic.
+- **Detector systematics**: JES, JER, lepton scale factors, b-tagging, pileup -- propagate each through full unfolding chain (not just efficiency correction).
+- **Background subtraction**: vary each background within its uncertainty before unfolding → propagate effect.
+- **Regularization strength**: vary regularization parameter within reasonable range → include variation as systematic.
 
 ## Quality gates
 
-1. **Closure test** -- unfold the MC detector-level distribution using
-   the response matrix built from the same MC. The unfolded result must
-   match the particle-level truth within statistical precision. This
-   validates the machinery only.
-2. **Stress test** -- reweight the MC truth to a significantly different
-   shape (e.g. multiply by a linear slope) and verify the unfolding
-   recovers the reweighted truth. This tests sensitivity to model
-   assumptions.
-3. **Prior dependence** -- for iterative methods, vary the prior (number
-   of iterations, initial spectrum shape) and verify the result is stable.
-   For matrix methods, this corresponds to varying the regularization.
-4. **Covariance validation** -- draw pseudo-experiments from the unfolded
-   result and its covariance matrix, refold them, and verify the chi2
-   distribution with the original detector-level data is consistent with
-   expectations.
-5. **Data/MC input validation** -- before unfolding, compare the
-   detector-level data with the folded MC prediction in every bin. Large
-   disagreements (beyond the total systematic envelope) indicate that
-   the response matrix may be unreliable in that region.
+1. **Closure test** -- unfold MC detector-level distribution using response matrix from same MC. Unfolded result must match particle-level truth within statistical precision. Validates machinery only.
+2. **Stress test** -- reweight MC truth to significantly different shape (e.g. multiply by linear slope) → verify unfolding recovers reweighted truth. Tests sensitivity to model assumptions.
+3. **Prior dependence** -- for iterative methods, vary prior (number of iterations, initial spectrum shape) → verify result stable. For matrix methods = varying regularization.
+4. **Covariance validation** -- draw pseudo-experiments from unfolded result and its covariance matrix, refold them → verify chi2 distribution with original detector-level data = consistent with expectations.
+5. **Data/MC input validation** -- before unfolding, compare detector-level data with folded MC prediction in every bin. Large disagreements (beyond total systematic envelope) → response matrix may be unreliable in that region.
 
 ## Known pitfalls
 
 ### Normalizing before correcting
 
-Normalizing the detector-level distribution before applying the
-unfolding. Normalization changes the statistical correlations and
-invalidates the response matrix. Always unfold the absolute
-distribution first, then normalize the unfolded result.
+Normalizing detector-level distribution before applying unfolding. Normalization changes statistical correlations → invalidates response matrix. Always unfold absolute distribution first, then normalize unfolded result.
 
 ### Confusing closure with validation
 
-A closure test that succeeds only proves the linear algebra works. It
-does not validate that the response matrix is appropriate for the data.
-The stress test is the actual validation.
+Closure test success only proves linear algebra works. Does not validate that response matrix = appropriate for data. Stress test = actual validation.
 
 ### Flat systematic estimates
 
-Assigning a flat (bin-independent) systematic uncertainty to a
-correction that is strongly bin-dependent. Each source must be
-evaluated bin-by-bin through the full unfolding chain.
+Assigning flat (bin-independent) systematic uncertainty to correction that is strongly bin-dependent. Each source must be evaluated bin-by-bin through full unfolding chain.
 
 ### Double-counting model dependence
 
-Using the same MC variation to assess both the response matrix
-systematic and the background subtraction systematic. These are the
-same variation propagated through different parts of the chain. Choose
-one path and document it.
+Using same MC variation to assess both response matrix systematic and background subtraction systematic. Same variation propagated through different parts of chain. Choose one path, document it.
 
 ### Wrong matching strategy
 
-Using a response matrix built with a different particle-level object
-matching strategy (e.g. geometric vs ghost-matching for jets) than what
-the fiducial definition implies. The matching in the response matrix
-must be consistent with the published fiducial definition.
+Using response matrix built with different particle-level object matching strategy (e.g. geometric vs ghost-matching for jets) than what fiducial definition implies. Matching in response matrix must be consistent with published fiducial definition.

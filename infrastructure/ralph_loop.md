@@ -1,8 +1,6 @@
 # Ralph loop -- autonomous iteration framework
 
-Autonomous execution loop adapted for the Phase 0-7 + VC1 + VC2 workflow.
-Each invocation performs one iteration of work, checks exit conditions,
-and either continues or stops.
+Autonomous execution loop for Phase 0-7 + VC1 + VC2 workflow. Each invocation performs one iteration, checks exit conditions, either continues or stops.
 
 ## Invocation template
 
@@ -32,36 +30,29 @@ Completion promise: PHASE_<N>_COMPLETE" --max-iterations <budget>
 
 ## Progress tracking
 
-Each iteration logs a one-line status:
+Each iteration logs one-line status:
 
 ```
 [iter 3/10] Phase 2: plotted ditau_mass, mbb, met for signal and
 all backgrounds. Next: 2D correlations.
 ```
 
-Progress is stored in `progress.txt` at the analysis root and in the
-mempalace wing.
+Progress stored in `progress.txt` at analysis root and in mempalace wing.
 
 ## Exit conditions
 
-The loop terminates when any of these hold:
+Loop terminates when any of these hold:
 
-1. **Completion promise met** -- the agent emits the exact completion
-   promise string, confirming the phase objective is satisfied.
-2. **Max iterations reached** -- the budget is exhausted. The agent
-   must summarize what was accomplished and what remains.
-3. **Stuck for 3 iterations** -- if the progress log shows no
-   meaningful change for 3 consecutive iterations, the loop exits
-   with a diagnostic explaining the blockage.
+1. **Completion promise met** -- agent emits exact completion promise string → phase objective satisfied.
+2. **Max iterations reached** -- budget exhausted. Agent must summarize what was accomplished and what remains.
+3. **Stuck for 3 iterations** -- progress log shows no meaningful change for 3 consecutive iterations → loop exits with diagnostic explaining blockage.
 
 ## Git strategy
 
-Commit after each completed phase or review round. Commit message
-format:
+Commit after each completed phase or review round. Commit message format:
 
 ```
 apexAI: complete Phase <N> (<short description>)
 ```
 
-Do not commit mid-phase unless the iteration budget is about to expire
-and partial progress should be preserved.
+Do not commit mid-phase unless iteration budget about to expire and partial progress should be preserved.

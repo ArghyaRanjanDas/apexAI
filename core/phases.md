@@ -1,22 +1,21 @@
 # Phase Specifications
 
-Eight phases from data acquisition to final publication. Each phase
-produces artifacts, undergoes review, and must clear a gate before
-advancing. Every number comes from code on data -- never from recalled
-knowledge.
+Eight phases: data acquisition → final publication. Each phase
+produces artifacts, undergoes review, clears gate before advancing.
+Every number comes from code on data -- never recalled knowledge.
 
 ---
 
 ## Phase 0 -- ACQUIRE
 
-**Goal.** Obtain collision data and record provenance.
+**Goal.** Obtain collision data, record provenance.
 **Agent.** Data Engineer.
 **Skip when:** user provides local ROOT/parquet files (verify they open).
 
 ### Tasks
 
-1. **Identify the data source.** Search open-data portals for the
-   relevant experiment and process (`techniques/data_sources.md`):
+1. **Identify data source.** Search open-data portals for
+   relevant experiment/process (`techniques/data_sources.md`):
 
    | Portal | URL | Experiments |
    |--------|-----|-------------|
@@ -37,7 +36,7 @@ knowledge.
 3. **Record provenance** in `data_manifest.md`: portal, DOI, URL,
    retrieval date, SHA-256, event count, file size, tree/branch info.
 
-4. **Fetch remaining files** and verify each opens with the expected
+4. **Fetch remaining files**, verify each opens with expected
    tree structure.
 
 ### Deliverables
@@ -50,8 +49,8 @@ Self-check. Escalate to Investigator if files fail to open.
 
 ## Phase 1 -- STRATEGY
 
-**Goal.** Identify the dataset (experiment, units, structure) and
-commit to an analysis plan before writing any analysis code.
+**Goal.** Identify dataset (experiment, units, structure), commit to
+analysis plan before writing any analysis code.
 **Agent.** Executor (orient) then Orchestrator (plan + review).
 
 ### Tasks
@@ -73,8 +72,8 @@ commit to an analysis plan before writing any analysis code.
    overlap = set(branches) & cms_markers
    ```
 
-6. **Detect units.** Sample 1000 events; if median leading-object pT
-   exceeds 1000, the file is in MeV. Record and convert consistently.
+6. **Detect units.** Sample 1000 events; median leading-object pT
+   exceeds 1000 → file in MeV. Record, convert consistently.
 
    | Quantity | GeV range | MeV range |
    |----------|-----------|-----------|
@@ -90,13 +89,13 @@ commit to an analysis plan before writing any analysis code.
 #### 1b. Plan
 
 9. **Analysis type.** Search (new signal) or measurement (known
-   process)? Governs blinding and statistical treatment throughout.
+   process)? Governs blinding + statistical treatment throughout.
 
 10. **Enumerate conventions.** For each convention in `conventions/`,
     state "Will implement" or "Not applicable" with justification.
 
 11. **Select primary technique.** Counting, template fit, sideband,
-    ABCD, unfolding, etc. Justify against physics and statistics.
+    ABCD, unfolding, etc. Justify against physics + statistics.
     See `techniques/signal_extraction.md`, `techniques/fitting.md`.
 
 12. **Two qualitatively different selection approaches** (both carried
@@ -105,12 +104,12 @@ commit to an analysis plan before writing any analysis code.
 
 13. **Systematic catalog.** Every source with: name, category
     (experimental/theoretical/modeling), evaluation method, expected
-    magnitude, references. Sources to consider: luminosity, trigger,
+    magnitude, references. Consider: luminosity, trigger,
     lepton ID/iso, JES/JER, b-tag, pileup, PDF, QCD scale, parton
     shower, MC generator, signal/background modeling, MC statistics.
 
-14. **Reference analysis table.** 3+ published analyses of the same
-    or similar process: citation, technique, dataset, key result.
+14. **Reference analysis table.** 3+ published analyses of same/similar
+    process: citation, technique, dataset, key result.
 
 15. **~6 flagship figures.** Title, observable, expected content,
     producing phase, AN location.
@@ -124,7 +123,7 @@ commit to an analysis plan before writing any analysis code.
 
 ### Review tier
 **4-bot.** Physics + Critical + Constructive -> Arbiter. A-items block
-advancement. The strategy is binding -- departures require re-review.
+advancement. Strategy = binding -- departures require re-review.
 
 ---
 
@@ -155,8 +154,8 @@ hypotheses, assess data quality -- before any selection.
 18. **Summary statistics** per variable: count, mean, std, min,
     percentiles (1/25/50/75/99), max, fraction zero/NaN. Store as CSV.
 
-19. **Invariant mass for all object pairs** (same-type and
-    cross-type). Separate OS and SS for charged particles:
+19. **Invariant mass for all object pairs** (same-type + cross-type).
+    Separate OS and SS for charged particles:
     ```python
     def invariant_mass(pt1, eta1, phi1, m1, pt2, eta2, phi2, m2):
         E1 = np.sqrt((pt1 * np.cosh(eta1))**2 + m1**2)
@@ -193,7 +192,7 @@ hypotheses, assess data quality -- before any selection.
 
 #### 2c. Physics interpretation
 
-25. **Compare peaks to the mass table:**
+25. **Compare peaks to mass table:**
 
     | Particle | Mass (GeV) | Decays |
     |----------|-----------|--------|
@@ -208,10 +207,10 @@ hypotheses, assess data quality -- before any selection.
     | H | 125.25 | bb, WW, tautau, gamgam |
     | top | 172.7 | Wb |
 
-    Peak within 3% of a known mass -> strong candidate. Otherwise
+    Peak within 3% of known mass → strong candidate. Otherwise
     evaluate instrumental artifacts (trigger turn-on, detector gaps,
     reconstruction zeros, combinatorics) and statistical fluctuations
-    (below 3 sigma -> require confirmation in independent subsamples).
+    (below 3 sigma → require confirmation in independent subsamples).
 
 #### 2d. Data quality and variable ranking
 
@@ -219,11 +218,11 @@ hypotheses, assess data quality -- before any selection.
     (normalized to area). Note discrepancies.
 
 27. **Rank variables by separation power.** Signal/background chi2/ndf
-    per variable. chi2/ndf > 5 -> investigate (powerful discriminant
+    per variable. chi2/ndf > 5 → investigate (powerful discriminant
     or poor modeling).
 
 28. **MVA input check.** Data/MC chi2/ndf > 5 in any control region
-    -> variable flagged, cannot enter MVA without remediation.
+    → variable flagged, cannot enter MVA without remediation.
 
 ### Deliverables
 - `plots/survey/` (all 1D distributions), summary CSV
@@ -239,7 +238,7 @@ hypotheses, assess data quality -- before any selection.
 
 **Goal.** Implement selection, background estimation, corrections.
 Carry two approaches through quantitative comparison. Validate with
-closure and stress tests.
+closure + stress tests.
 **Agent.** Executor.
 
 ### Tasks
@@ -252,34 +251,33 @@ closure and stress tests.
 
 30. **Analysis-specific selection** for both Phase 1 approaches.
     Document every cut with physics motivation. Start loose, tighten
-    incrementally. Never optimize toward a known answer.
+    incrementally. Never optimize toward known answer.
 
 31. **Cut-flow tables** per approach: cut name, surviving events,
     cumulative efficiency, signal efficiency, background rejection.
 
 32. **N-1 plots.** For each cut variable, plot with all other cuts
-    applied. Verifies the boundary sits where signal/background
-    separate.
+    applied. Verifies boundary sits where signal/background separate.
 
-33. **Control regions.** One per major background, orthogonal to the
+33. **Control regions.** One per major background, orthogonal to
     signal region. Validate data/MC agreement in each.
 
 #### 3b. Approach comparison
 
-34. **Quantitative comparison** of both approaches on a common metric
+34. **Quantitative comparison** of both approaches on common metric
     (expected significance or sensitivity). Select primary; secondary
-    becomes a Phase 4 cross-check.
+    becomes Phase 4 cross-check.
 
 #### 3c. Validation
 
 35. **Closure test.** Full chain on MC pseudo-data with known truth.
     Must recover injected signal: chi2/ndf < 3, p > 0.05.
 
-36. **Stress test.** Reweight MC kinematics and verify recovery. Tests
+36. **Stress test.** Reweight MC kinematics, verify recovery. Tests
     robustness against data/MC modeling differences.
 
-37. **Failure remediation.** If either test fails, follow the
-    remediation protocol below. Never skip a failing test.
+37. **Failure remediation.** If either test fails → remediation
+    protocol below. Never skip failing test.
 
 #### 3d. MVA (if applicable)
 
@@ -294,8 +292,8 @@ closure and stress tests.
 40. **Implement every variation** from Phase 1 catalog. Per source:
     up/down variation, rerun selection, record effect.
 
-41. **Organize by category** (experimental/theoretical/modeling) in a
-    format Phase 4 can ingest into the statistical model.
+41. **Organize by category** (experimental/theoretical/modeling) in
+    format Phase 4 can ingest into statistical model.
 
 ### Deliverables
 - Selection code (both approaches), cut-flow tables, N-1 plots
@@ -310,16 +308,15 @@ closure and stress tests.
 
 ## Phase 4 -- INFERENCE
 
-**Goal.** Extract the expected result on simulation and validate on
-10% data. No human gate here -- the analysis proceeds to draft
-documentation before human review.
-See `core/blinding.md`.
+**Goal.** Extract expected result on simulation, validate on 10% data.
+No human gate here -- analysis proceeds to draft documentation before
+human review. See `core/blinding.md`.
 
 ### Phase 4a -- Expected Result
 
 **Agent.** Executor.
 
-42. **Build the statistical model** (template fit, counting, etc.)
+42. **Build statistical model** (template fit, counting, etc.)
     from Phase 3 predictions. See `techniques/fitting.md`.
 
 43. **Systematic completeness table.** Every Phase 1 source must
@@ -344,7 +341,7 @@ See `core/blinding.md`.
     - Scale pT x1.02 -> mass shifts ~2%
     - Drop 50% events -> uncertainty grows ~sqrt(2)
     - Inject fake peak at 75 GeV -> fit must find it
-    Each has a PASS criterion. Failure triggers investigation.
+    Each has PASS criterion. Failure triggers investigation.
 
 48. **Fit initialization from data shape.** Peak from max bin, width
     from FWHM, yield from peak-region integral. Never from textbook.
@@ -383,10 +380,10 @@ Validator, BibTeX, Arbiter). A-items block 4b.
 
 ## Phase 5 -- DRAFT NOTE
 
-**Goal.** Produce a complete, publication-quality draft analysis note
-containing full methodology and 10% validation results. This draft
-undergoes internal review, VC1, VC2, and human gate before any full
-data unblinding. Humans see a fully AI-attested, VC-endorsed package.
+**Goal.** Produce complete, publication-quality draft analysis note
+with full methodology + 10% validation results. Draft undergoes
+internal review, VC1, VC2, human gate before any full data unblinding.
+Humans see fully AI-attested, VC-endorsed package.
 **Agent.** Note Writer (draft), Typesetter (compile), Orchestrator.
 
 ### Tasks
@@ -428,23 +425,21 @@ Rendering + Arbiter. A-items block VC1.
 
 ### Post-review: VC1 Full Review
 
-VC1 (5 specialist reviewers) conduct a full analysis review of the
-draft note. Scope covers methodology, statistical treatment,
-systematic evaluation, physics interpretation, and presentation.
-See `core/review.md`.
+VC1 (5 specialist reviewers) = full analysis review of draft note.
+Scope covers methodology, statistical treatment, systematic evaluation,
+physics interpretation, presentation. See `core/review.md`.
 
 ### Post-review: VC2 Full Review
 
-VC2 (5 independent reviewers, no VC1 access) conduct a full
-adversarial review. Includes cross-analyst reproduction, blind
-re-analysis, independent systematic evaluation, and presentation
-critique. See `core/review.md`. A-items from VC1 or VC2 block the
-human gate.
+VC2 (5 independent reviewers, no VC1 access) = full adversarial review.
+Includes cross-analyst reproduction, blind re-analysis, independent
+systematic evaluation, presentation critique. See `core/review.md`.
+A-items from VC1 or VC2 block human gate.
 
 ### HUMAN GATE
 
-Orchestrator halts. Humans receive the complete package:
-- Draft AN with full methodology and 10% results
+Orchestrator halts. Humans receive complete package:
+- Draft AN with full methodology + 10% results
 - All Phase 2-4b figures and diagnostics
 - 5-bot internal review report (resolved)
 - VC1 specialist review attestation
@@ -457,26 +452,24 @@ Human chooses: **APPROVE** (advance to full unblinding),
 
 No automated bypass. Decision logged in experiment log.
 
-**Approval freezes methodology.** Once the human gate clears, the
-analysis configuration (selection, fit model, systematic treatment,
-operating points) is locked. Phase 6 runs the frozen chain on full
-data. Any methodology change after approval requires regression to
-Phase 3 or earlier and re-traversal of Phases 4-5.
+**Approval freezes methodology.** Post-gate, analysis configuration
+(selection, fit model, systematic treatment, operating points) = locked.
+Phase 6 runs frozen chain on full data. Any methodology change after
+approval → regression to Phase 3 or earlier, re-traversal of Phases 4-5.
 
 ---
 
 ## Phase 6 -- FULL DATA
 
-**Goal.** Execute the human-approved, methodology-frozen analysis on
-the full dataset. No configuration changes permitted.
+**Goal.** Execute human-approved, methodology-frozen analysis on
+full dataset. No configuration changes permitted.
 **Agent.** Executor.
 
 ### Tasks
 
 60. **Full dataset, frozen configuration.** No changes to selection,
-    fit model, systematic treatment, or operating points after the
-    Phase 5 human gate. Configuration hash verified against the
-    approved version.
+    fit model, systematic treatment, or operating points post-gate.
+    Configuration hash verified against approved version.
 
 61. **Post-fit diagnostics:** pre/post-fit overlays, nuisance pulls,
     parameter correlations, GoF (chi2/ndf, p-value, saturated model),
@@ -484,7 +477,7 @@ the full dataset. No configuration changes permitted.
 
 62. **Robustness checks:** vary fit range +/-10%, halve/double bins,
     tighten/loosen each cut, compare primary vs. secondary approach.
-    Result must be stable within systematics.
+    Result must stay stable within systematics.
 
 63. **Anomaly assessment:** unexpected features, |pull| > 3, tension
     with cross-checks, >3 sigma excesses/deficits. All documented.
@@ -499,13 +492,12 @@ the full dataset. No configuration changes permitted.
 
 ### Anomaly Escalation
 
-If observed result deviates from expected (Phase 4a) by more than
-2 sigma:
-- Automatic escalation from 1-bot to 4-bot review
+Observed result deviates from expected (Phase 4a) by >2 sigma →
+- Automatic escalation: 1-bot → 4-bot review
 - Detailed investigation of data/MC differences required
 - Cross-check with secondary approach mandatory
 - Pull distribution analysis across all regions
-- Human notification with anomaly report before proceeding to Phase 7
+- Human notification with anomaly report before Phase 7
 
 ### Deliverables
 - Full observed result with complete uncertainty breakdown
@@ -515,21 +507,21 @@ If observed result deviates from expected (Phase 4a) by more than
 
 ### Review tier
 **1-bot.** Critical Reviewer + Plot Validator. Methodology already
-approved at Phase 5 human gate; focus is on execution correctness and
-result integrity.
+approved at Phase 5 gate; focus = execution correctness + result
+integrity.
 
-**Escalation:** if anomalous (>2 sigma from expected), automatically
-escalates to **4-bot** (Physics, Critical, Constructive, Plot
-Validator + Arbiter) with mandatory anomaly investigation.
+**Escalation:** if anomalous (>2 sigma from expected), auto-escalates
+to **4-bot** (Physics, Critical, Constructive, Plot Validator + Arbiter)
+with mandatory anomaly investigation.
 
 ---
 
 ## Phase 7 -- FINAL NOTE
 
-**Goal.** Update the Phase 5 draft AN with full observed results,
-produce flagship figures at publication quality, and compile the
-final PDF. The methodology sections are unchanged (frozen at human
-gate); only results, figures, and summary are updated.
+**Goal.** Update Phase 5 draft AN with full observed results, produce
+flagship figures at publication quality, compile final PDF. Methodology
+sections unchanged (frozen at gate); only results, figures, summary
+updated.
 **Agent.** Note Writer (update), Typesetter (compile), Orchestrator.
 
 ### Tasks
@@ -546,15 +538,15 @@ gate); only results, figures, and summary are updated.
     observed data overlaid. All per `standards/plotting.md`.
 
 68. **Update summary chapter:** final findings, comparison with
-    theory predictions, comparison with reference analyses from
-    Phase 1, outlook and future directions.
+    theory predictions, comparison with Phase 1 reference analyses,
+    outlook + future directions.
 
 69. **Compile final PDF:** same toolchain as Phase 5. Verify all
-    new figures, tables, and cross-references resolve. Methodology
-    sections must be byte-identical to the approved draft (diff check).
+    new figures, tables, cross-references resolve. Methodology
+    sections must be byte-identical to approved draft (diff check).
 
 70. **Final rendering check:** margin overflow, page breaks, equations,
-    references, captions, page count. Final PDF is the deliverable.
+    references, captions, page count. Final PDF = deliverable.
 
 ### Deliverables
 - Final AN source + compiled PDF
@@ -569,9 +561,8 @@ Rendering + Arbiter. A-items block VC passes.
 
 ### Post-review: VC1 Light Pass
 
-VC1 (same 5 specialist reviewers from Phase 5) conduct a light review.
-Scope is restricted to results integration only -- methodology was
-already approved at Phase 5. Checklist:
+VC1 (same 5 specialists from Phase 5) = light review. Scope restricted
+to results integration only -- methodology already approved at Phase 5.
 - [ ] Observed results correctly integrated into AN
 - [ ] Figures match `results.json` values
 - [ ] No methodology sections modified
@@ -580,8 +571,8 @@ already approved at Phase 5. Checklist:
 
 ### Post-review: VC2 Light Pass
 
-VC2 (same 5 independent reviewers from Phase 5) conduct a light
-adversarial review on full data. Scope:
+VC2 (same 5 independent reviewers from Phase 5) = light adversarial
+review on full data:
 - [ ] Re-execute full chain with frozen configuration, verify
       reproduction of observed results
 - [ ] Adversarial tests pass on full data (same tests as Phase 5
@@ -591,10 +582,9 @@ adversarial review on full data. Scope:
       estimation
 
 ### Final sign-off
-Both VC1 and VC2 light passes must clear. A-items are resolved
-through the same protocol as Phase 5. Once cleared, the analysis
-is complete and the final AN is ready for collaboration review
-or publication.
+Both VC1 + VC2 light passes must clear. A-items resolved through
+same protocol as Phase 5. Once cleared → analysis complete, final AN
+ready for collaboration review or publication.
 
 ---
 ---
@@ -604,16 +594,16 @@ or publication.
 ### Gate Protocol
 
 Every phase boundary requires:
-1. **Artifacts complete** -- all deliverables exist and are non-empty
+1. **Artifacts complete** -- all deliverables exist, non-empty
 2. **Experiment log updated** -- structured entry of actions/findings
-3. **Review conducted** -- per the tier listed for that phase
+3. **Review conducted** -- per tier listed for that phase
 4. **A-items resolved** -- each resolution documented, reviewer confirms
 5. **Advance decision** -- ADVANCE, ITERATE, or REGRESS logged
 
-The orchestrator must not execute Phase N+1 code while Phase N gates
+Orchestrator must not execute Phase N+1 code while Phase N gates
 remain open. **Regression** (triggered by review findings, validation
 failures, or VC authority) marks intervening artifacts stale (not
-deleted) and re-enters the target phase with rationale logged.
+deleted), re-enters target phase with rationale logged.
 
 ### Gate Protocol Summary
 
@@ -633,35 +623,34 @@ deleted) and re-enters the target phase with rationale logged.
 
 ### Validation Failure Remediation
 
-When closure, stress, or perturbation tests fail, at least three
+When closure, stress, or perturbation tests fail → at least three
 distinct attempts before accepting failure:
 
-1. **Check the formula** -- dimensional consistency, limiting cases,
+1. **Check formula** -- dimensional consistency, limiting cases,
    off-by-one, integer division, sign conventions, factors of 2pi
-2. **Check the inputs** -- correct branches, units, selection, weights,
+2. **Check inputs** -- correct branches, units, selection, weights,
    no double-counting
-3. **Alternative binning** -- coarser and finer; some failures are
-   bin-migration artifacts
+3. **Alternative binning** -- coarser + finer; some failures = bin-migration artifacts
 4. **Different regularization/fit config** -- scan strength, document
 5. **Different MC** -- alternative generator or tune; failure specific
-   to one generator is a modeling issue
+   to one generator = modeling issue
 6. **Different method** -- attempt secondary approach from Phase 1
 
-All attempts exhausted -> document quantitatively, escalate to
-Investigator. May proceed if impact is quantified as a systematic
+All attempts exhausted → document quantitatively, escalate to
+Investigator. May proceed if impact quantified as systematic
 (requires reviewer approval as A-item).
 
 ---
 
 ### Known-Underestimate Protocol
 
-When a systematic is obviously conservative:
-1. Document why the current estimate is conservative (with references)
-2. Attempt a data-driven evaluation and compare
-3. Report both values; primary uses the better estimate, conservative
+When systematic = obviously conservative:
+1. Document why current estimate = conservative (with references)
+2. Attempt data-driven evaluation, compare
+3. Report both values; primary uses better estimate, conservative
    quoted as cross-check
 
-Prevents both inflated uncertainties (obscure sensitivity) and
+Prevents inflated uncertainties (obscure sensitivity) and
 underestimated uncertainties (false discoveries).
 
 ---
@@ -673,7 +662,7 @@ For any tunable threshold (BDT cut, mass window, isolation, etc.):
 2. Plot result vs. operating point
 3. Identify plateau (stable within stat uncertainty = robust;
    otherwise treat as systematic source)
-4. Document choice, criterion, and local sensitivity
+4. Document choice, criterion, local sensitivity
 
 ---
 
@@ -684,9 +673,9 @@ For any tunable threshold (BDT cut, mass window, isolation, etc.):
 2. **MC scale factors** -- data/MC ratios as per-event weights;
    propagate statistical uncertainty as systematic.
 3. **Barlow-Beeston lite** -- bin-by-bin MC-stat nuisance parameters
-   when MC samples are small.
+   when MC samples small.
 4. **Turn-on curves** -- plot trigger efficiency vs. relevant variable;
-   cut above the 99% plateau.
+   cut above 99% plateau.
 
 ---
 
@@ -752,11 +741,11 @@ DONE
 ```
 
 **Forward only.** No phase depends on later-phase deliverables. If
-Phase N needs Phase N+1 information, regress to Phase 1.
+Phase N needs Phase N+1 information → regress to Phase 1.
 
 **Regression.** Any phase may regress to any earlier phase. Regression
 to Phase 0 requires Orchestrator approval. Regression to Phase 1
-invalidates all subsequent artifacts. Regression after the Phase 5
-human gate (i.e., from Phase 6 or 7) requires re-traversal of
-Phases 4-5 and a new human gate approval. Methodology changes after
-human approval are not permitted without full regression.
+invalidates all subsequent artifacts. Regression post-Phase 5 gate
+(from Phase 6 or 7) → re-traversal of Phases 4-5 + new human gate
+approval. Methodology changes post-approval not permitted without
+full regression.

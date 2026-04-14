@@ -10,20 +10,20 @@
 | Known shapes for signal and background components | Template decomposition | 4 |
 | None of the above apply | Fit-based extraction | 5 |
 
-When in doubt, apply multiple methods and check that they give consistent results. Disagreement between methods reveals systematic effects.
+When in doubt, apply multiple methods → check consistency. Disagreement between methods reveals systematic effects.
 
 ---
 
 ## 1. Sideband Estimation
 
-Estimate the background under a signal peak using data from adjacent regions (sidebands) where signal contamination is negligible.
+Estimate background under signal peak using data from adjacent regions (sidebands) where signal contamination = negligible.
 
 **Procedure:**
-1. Define signal region around the feature of interest
-2. Define sideband regions on both sides, away from the signal
-3. Fit or interpolate the background shape using sideband data
-4. Extrapolate the background into the signal region
-5. Subtract the estimated background from data in the signal region
+1. Define signal region around feature of interest
+2. Define sideband regions on both sides, away from signal
+3. Fit or interpolate background shape using sideband data
+4. Extrapolate background into signal region
+5. Subtract estimated background from data in signal region
 
 ```python
 import numpy as np
@@ -66,13 +66,13 @@ def sideband_subtraction(bin_centers, bin_counts, signal_window, sideband_window
 **Requirements:**
 - Sidebands must be free of signal contamination
 - Background shape must be smooth enough to interpolate reliably
-- Sidebands should be on both sides of the signal region when possible
+- Sidebands should be on both sides of signal region when possible
 
 ---
 
 ## 2. Control Sample Subtraction
 
-Subtract a control sample that captures the background but not the signal.
+Subtract control sample that captures background but not signal.
 
 **Cross-domain examples:**
 
@@ -100,15 +100,15 @@ def control_subtraction(data_signal, data_control, scale_factor=1.0):
 ```
 
 **Requirements:**
-- Control sample must have the same background composition as the signal sample
-- Signal contamination in the control sample must be negligible
-- The scale factor must be determined from a signal-free region or from first principles
+- Control sample must have same background composition as signal sample
+- Signal contamination in control sample must be negligible
+- Scale factor must be determined from signal-free region or from first principles
 
 ---
 
 ## 3. ABCD Method
 
-Estimate background in a signal region using two uncorrelated discriminating variables to define four regions in a 2D plane.
+Estimate background in signal region using two uncorrelated discriminating variables → four regions in 2D plane.
 
 ```
          Variable Y
@@ -122,11 +122,11 @@ Estimate background in a signal region using two uncorrelated discriminating var
         Variable X
 ```
 
-The key relation: if X and Y are uncorrelated for background,
+Key relation: if X and Y uncorrelated for background,
 
     N_D_background = N_B * N_C / N_A_background
 
-Equivalently, the background in the signal region A is:
+Equivalently, background in signal region A:
 
     N_A_background = N_B * N_D / N_C
 
@@ -156,19 +156,19 @@ def abcd_method(n_a_observed, n_b, n_c, n_d):
     return bg_estimate, signal_estimate, bg_error
 ```
 
-**Critical requirement:** You MUST verify that the two variables X and Y are uncorrelated in background-dominated samples before using this method. Check correlation in simulation or in a control region. If X and Y are correlated, the estimate will be biased.
+**Critical requirement:** MUST verify X and Y uncorrelated in background-dominated samples before using. Check correlation in simulation or control region. X and Y correlated → estimate biased.
 
 ---
 
 ## 4. Template Decomposition
 
-Decompose observed data into a weighted sum of shape templates (e.g., from simulation or control samples), fitting the normalizations.
+Decompose observed data into weighted sum of shape templates (from simulation or control samples), fitting normalizations.
 
-The data histogram is modeled as:
+Data histogram modeled as:
 
     data_i = sum_j (f_j * template_j_i)
 
-where f_j are the fractions/normalizations to be fitted, and template_j_i is the expected count from component j in bin i.
+f_j = fractions/normalizations to fit, template_j_i = expected count from component j in bin i.
 
 ```python
 from scipy.optimize import minimize
@@ -233,19 +233,19 @@ def template_fit(data, templates, template_names=None):
 ```
 
 **Requirements:**
-- Templates must represent the actual shapes of each component (from simulation or data-driven methods)
-- Templates should be normalized to unit area or to expected yields before fitting
-- Check that the fitted fractions are physically reasonable (non-negative, sum makes sense)
+- Templates must represent actual shapes of each component (from simulation or data-driven methods)
+- Templates should be normalized to unit area or expected yields before fitting
+- Check fitted fractions physically reasonable (non-negative, sum makes sense)
 
 ---
 
 ## 5. Fit-Based Extraction
 
-Fit the observed distribution with a signal + background model and extract the signal yield from the fit parameters.
+Fit observed distribution with signal + background model → extract signal yield from fit parameters.
 
-This is described in detail in [techniques/fitting.md](fitting.md).
+Described in detail in [techniques/fitting.md](fitting.md).
 
-The signal yield is obtained by integrating the signal component of the fitted model:
+Signal yield obtained by integrating signal component of fitted model:
 
 ```python
 def extract_signal_yield(signal_func, popt_signal, x_range, n_points=1000):
@@ -262,14 +262,14 @@ def extract_signal_yield(signal_func, popt_signal, x_range, n_points=1000):
 ```
 
 **Requirements:**
-- The model must describe the data well (check chi2/ndf; see fitting.md)
-- Signal and background components must be clearly separable in the model
-- Report the signal yield with its uncertainty from the fit covariance
+- Model must describe data well (check chi2/ndf; see fitting.md)
+- Signal and background components must be clearly separable in model
+- Report signal yield with uncertainty from fit covariance
 
 ---
 
 ## General Principles
 
-- **Blinding:** In searches, finalize the analysis strategy on simulation or sidebands BEFORE looking at data in the signal region.
-- **Closure tests:** Apply the method to simulation where the true signal is known, and verify that the extracted signal matches the truth.
-- **Cross-checks:** Use at least two methods when feasible. If results disagree, investigate the source of the discrepancy before choosing one.
+- **Blinding:** In searches, finalize analysis strategy on simulation or sidebands BEFORE looking at data in signal region.
+- **Closure tests:** Apply method to simulation where true signal = known → verify extracted signal matches truth.
+- **Cross-checks:** Use at least two methods when feasible. Results disagree → investigate discrepancy source before choosing one.

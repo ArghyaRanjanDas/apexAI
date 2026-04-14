@@ -118,7 +118,7 @@ def exponential_bg(x, A, lam):
 ## Parameter Estimation from Data
 
 NEVER guess initial parameters from physics knowledge.
-Estimate them directly from the data.
+Estimate directly from data.
 
 ```python
 def estimate_parameters(bin_centers, bin_counts):
@@ -163,7 +163,7 @@ def estimate_parameters(bin_centers, bin_counts):
     }
 ```
 
-## Performing the Fit
+## Performing Fit
 
 ```python
 from scipy.optimize import curve_fit
@@ -206,25 +206,25 @@ def perform_fit(model_func, bin_centers, bin_counts, p0):
 
 ## Iteration Strategy
 
-When a fit is unsatisfactory, follow this path in order:
+When fit = unsatisfactory, follow this order:
 
-1. **Try a different background shape** -- switch from poly1 to exponential or poly2
-2. **Try a different signal shape** -- switch from Gaussian to Crystal Ball or Voigt
-3. **Restrict the fit range** -- exclude regions with unexpected structure
-4. **Check for secondary features** -- there may be a second peak; try double Gaussian
+1. **Try different background shape** -- poly1 → exponential or poly2
+2. **Try different signal shape** -- Gaussian → Crystal Ball or Voigt
+3. **Restrict fit range** -- exclude regions with unexpected structure
+4. **Check for secondary features** -- second peak possible; try double Gaussian
 
-Do not iterate more than 3-4 times on the same distribution.
-If no model gives chi2/ndf in 0.5-2.0, report the best fit and note the limitation.
+Do not iterate more than 3-4 times on same distribution.
+No model gives chi2/ndf in 0.5-2.0 → report best fit, note limitation.
 
 ## Anti-Hallucination Rule
 
-**NEVER** set initial parameters based on physics knowledge (e.g., "the Z boson mass is 91.2 GeV").
-Always derive initial estimates from the data itself using the procedure above.
-Physics knowledge may be used ONLY to generate hypotheses about what a peak might be AFTER the fit is performed.
+**NEVER** set initial parameters from physics knowledge (e.g., "Z boson mass = 91.2 GeV").
+Always derive initial estimates from data itself using procedure above.
+Physics knowledge = ONLY for hypothesis generation AFTER fit completes.
 
 ## Mass Reference Table (for hypothesis generation ONLY)
 
-This table is for interpreting fit results. Do NOT use these values as fit inputs.
+For interpreting fit results. Do NOT use as fit inputs.
 
 | Particle | Mass (GeV) |
 |---|---|

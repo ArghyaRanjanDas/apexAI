@@ -1,12 +1,10 @@
 # Heuristics -- agent-maintained tool idiom library
 
-Living document of non-obvious patterns for the Python HEP stack. Agents
-add entries when they discover a pattern that cost time to figure out.
-The goal is to prevent re-discovering the same API quirks every session.
+Living document of non-obvious patterns for Python HEP stack. Agents add entries when they discover pattern that cost time to figure out. Goal = prevent re-discovering same API quirks every session.
 
 ## mplhep
 
-**Set experiment style once at the top**:
+**Set experiment style once at top**:
 ```python
 import mplhep as hep
 hep.style.use("CMS")  # or "ATLAS", "LHCb", "ALICE"
@@ -33,7 +31,7 @@ hep.hist2dplot(h2d, ax=ax, cbar=True, cbarlabel="Events")
 
 ## uproot
 
-**Lazy array loading** -- load branches on demand, not the full tree:
+**Lazy array loading** -- load branches on demand, not full tree:
 ```python
 tree = uproot.open("file.root:Events")
 arrays = tree.arrays(["pt", "eta", "phi"], library="ak")
@@ -52,14 +50,14 @@ arrays = uproot.concatenate(["f1.root:Events", "f2.root:Events"],
 
 ## hist
 
-**Create and fill a histogram**:
+**Create and fill histogram**:
 ```python
 import hist
 h = hist.Hist(hist.axis.Regular(50, 0, 200, name="mass", label="m [GeV]"))
 h.fill(mass=mass_array)
 ```
 
-**Project a 2D histogram to 1D**:
+**Project 2D histogram to 1D**:
 ```python
 h_proj = h2d[:, sum]   # project out the second axis
 h_slice = h2d[:, 2j:5j]  # slice then project: h_slice[:, sum]
@@ -83,18 +81,13 @@ m.fixed["param2"] = True        # fix during first fit
 m.migrad()
 ```
 
-**HESSE vs MINOS**: HESSE gives symmetric parabolic errors (fast).
-MINOS gives asymmetric profile likelihood intervals (slow, more accurate
-near boundaries). Always run HESSE first. Run MINOS for parameters of
-interest or when HESSE errors are suspect.
+**HESSE vs MINOS**: HESSE gives symmetric parabolic errors (fast). MINOS gives asymmetric profile likelihood intervals (slow, more accurate near boundaries). Always run HESSE first. Run MINOS for parameters of interest or when HESSE errors = suspect.
 ```python
 m.hesse()  # symmetric errors
 m.minos("param1")  # asymmetric errors for param1
 ```
 
-**Parameter limits near boundaries**: if a parameter sits at its limit
-after the fit, the covariance matrix is unreliable. Either widen the
-limit or reparametrize.
+**Parameter limits near boundaries**: if parameter sits at its limit after fit → covariance matrix unreliable. Either widen limit or reparametrize.
 
 ## awkward
 
@@ -107,7 +100,7 @@ good_jets = jets[jets.pt > 30]
 events = events[ak.num(good_jets) >= 2]
 ```
 
-**Combinations** -- all pairs of objects in an event:
+**Combinations** -- all pairs of objects in event:
 ```python
 pairs = ak.combinations(jets, 2, fields=["j1", "j2"])
 dijet_mass = (pairs.j1 + pairs.j2).mass
@@ -127,6 +120,4 @@ filled = ak.fill_none(padded, 0.0)  # replace None with 0
 
 ---
 
-*Maintenance*: agents add entries below when they discover a non-obvious
-pattern. Include the tool name as a section header and a minimal working
-example.
+*Maintenance*: agents add entries below when they discover non-obvious pattern. Include tool name as section header and minimal working example.

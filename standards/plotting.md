@@ -1,9 +1,6 @@
 # Figure Production Standards
 
-All figures produced in an apexAI analysis must follow these rules. They are
-non-negotiable. Any deviation requires an explicit, documented justification
-in the experiment log. The rules prevent broken aspect ratios, mangled labels,
-clipped content, and inconsistent styling that have plagued past analyses.
+All figures in apexAI analysis must follow these rules. Non-negotiable. Deviation requires explicit, documented justification in experiment log. Rules prevent broken aspect ratios, mangled labels, clipped content, inconsistent styling.
 
 ---
 
@@ -52,24 +49,17 @@ plt.close(fig)
 
 ## Mandatory Rules (Category A if Violated)
 
-### Font sizes are LOCKED
+### Font sizes LOCKED
 
-Do not pass absolute numeric `fontsize=` values to ANY matplotlib call
-(`set_xlabel`, `set_ylabel`, `set_title`, `tick_params`, `annotate`, `text`).
-The CMS stylesheet sets all font sizes correctly for the 10x10 figure size.
-Relative string sizes (`'small'`, `'x-small'`, `'xx-small'`) are allowed
-where needed (dense legends, annotation text).
+No absolute numeric `fontsize=` values to ANY matplotlib call (`set_xlabel`, `set_ylabel`, `set_title`, `tick_params`, `annotate`, `text`). CMS stylesheet sets all font sizes correctly for 10x10 figure size. Relative string sizes (`'small'`, `'x-small'`, `'xx-small'`) allowed where needed (dense legends, annotation text).
 
-### Figure size is LOCKED at (10, 10)
+### Figure size LOCKED at (10, 10)
 
-Do not use any other figure size. The CMS stylesheet font sizes are calibrated
-for this canvas. For ratio plots: `figsize=(10, 10)` with `height_ratios=[3, 1]`.
-For MxN subplots: scale to 10 per subplot dimension (2x2 -> (20, 20),
-1x3 -> (30, 10)).
+No other figure size. CMS stylesheet font sizes calibrated for this canvas. Ratio plots: `figsize=(10, 10)` with `height_ratios=[3, 1]`. MxN subplots: scale to 10 per subplot dimension (2x2 → (20, 20), 1x3 → (30, 10)).
 
 ### Legends via mpl_magic
 
-The default approach is to scale the y-axis to accommodate the legend:
+Default approach = scale y-axis to accommodate legend:
 
 ```python
 from mplhep.plot import mpl_magic
@@ -77,46 +67,34 @@ ax.legend(fontsize="x-small")
 mpl_magic(ax)
 ```
 
-Call `mpl_magic(ax)` after all plotting is done. It extends the y-range so
-the legend sits in empty space above the data. Manual placement (`loc=`,
-`bbox_to_anchor`) is allowed only when the plot has a genuinely empty region.
+Call `mpl_magic(ax)` after all plotting done. Extends y-range so legend sits in empty space above data. Manual placement (`loc=`, `bbox_to_anchor`) allowed only when plot has genuinely empty region.
 
-Legend-data overlap is Category A. Visual inspection of rendered figures is
-required, not just checking `loc=` in the script.
+Legend-data overlap = Category A. Visual inspection of rendered figures required, not just checking `loc=` in script.
 
 ### Colorbars: make_square_add_cbar or cbarextend
 
-For ANY 2D plot with a colorbar, use one of:
+For ANY 2D plot with colorbar, use one of:
 - `mh.hist2dplot(H, cbarextend=True)` (preferred)
 - `cax = mh.utils.make_square_add_cbar(ax)` then `fig.colorbar(im, cax=cax)`
 - `cax = mh.utils.append_axes(ax, extend=True)` then `fig.colorbar(im, cax=cax)`
 
-**Never use** `fig.colorbar(im)`, `fig.colorbar(im, ax=ax)`,
-`fig.colorbar(im, ax=ax, shrink=...)`, or `plt.colorbar(...)`. These steal
-space from the main axes and break the square aspect ratio. Applies to ALL
-2D plots: correlation matrices, migration matrices, response matrices,
-efficiency maps.
+**Never use** `fig.colorbar(im)`, `fig.colorbar(im, ax=ax)`, `fig.colorbar(im, ax=ax, shrink=...)`, or `plt.colorbar(...)`. These steal space from main axes → break square aspect ratio. Applies to ALL 2D plots: correlation matrices, migration matrices, response matrices, efficiency maps.
 
 ### Ratio plots: sharex=True and hspace=0
 
-Ratio plots MUST use `sharex=True` in `plt.subplots()` AND
-`fig.subplots_adjust(hspace=0)`. Without `sharex=True`, the upper panel shows
-a redundant x-axis label ("Axis 0"). Without `hspace=0`, a visible gap
-appears between the main and ratio panels. Both are Category A.
+Ratio plots MUST use `sharex=True` in `plt.subplots()` AND `fig.subplots_adjust(hspace=0)`. Without `sharex=True` → upper panel shows redundant x-axis label ("Axis 0"). Without `hspace=0` → visible gap between main and ratio panels. Both = Category A.
 
-**Axis 0 workaround.** After calling `exp_label(ax=ax_main, loc=0)`,
-suppress the artifact on the ratio panel:
+**Axis 0 workaround.** After calling `exp_label(ax=ax_main, loc=0)`, suppress artifact on ratio panel:
 ```python
 for txt in rax.texts:
     if "Axis" in txt.get_text():
         txt.remove()
 ```
-Or use `loc=2` (upper left) to avoid triggering the bug.
+Or use `loc=2` (upper left) to avoid triggering bug.
 
 ### Histograms via mh.histplot
 
-When plotting histograms from raw event data, always use `mh.histplot()`.
-Never use `ax.step()`, `ax.bar()`, or `ax.fill_between()` for these.
+When plotting histograms from raw event data, always use `mh.histplot()`. Never use `ax.step()`, `ax.bar()`, or `ax.fill_between()`.
 
 | Data type | Correct | Wrong |
 |-----------|---------|-------|
@@ -127,24 +105,17 @@ Never use `ax.step()`, `ax.bar()`, or `ax.fill_between()` for these.
 
 ### Derived quantities: explicit yerr
 
-When plotting any quantity that is NOT a raw event count (normalized
-distributions, correction factors, ratios, efficiencies, systematic shifts),
-you MUST pass explicit `yerr=`. Without it, mplhep computes sqrt(bin content),
-which is meaningless for non-count values.
+When plotting any quantity NOT raw event count (normalized distributions, correction factors, ratios, efficiencies, systematic shifts), MUST pass explicit `yerr=`. Without it, mplhep computes sqrt(bin content) → meaningless for non-count values.
 
-**The test:** Did you fill the histogram with `h.fill(raw_values)`? Then
-auto sqrt(N) is correct. Did you assign values with `h.view()[:] = ...` or
-compute from a formula? Then `yerr=` is mandatory.
+**Test:** Filled histogram with `h.fill(raw_values)`? Auto sqrt(N) correct. Assigned values with `h.view()[:] = ...` or computed from formula? `yerr=` mandatory.
 
 ### No ax.text or ax.annotate
 
-Use `mh.label.add_text(text, ax=ax)` for all text annotations. This respects
-mplhep styling and positioning. Includes panel labels like (a), (b) in grids.
+Use `mh.label.add_text(text, ax=ax)` for all text annotations. Respects mplhep styling and positioning. Includes panel labels like (a), (b) in grids.
 
 ### No titles
 
-Never `ax.set_title()`. Captions go in the analysis note. Additional info
-can go into `ax.legend(title="...")` or `mh.label.add_text()`.
+Never `ax.set_title()`. Captions go in analysis note. Additional info → `ax.legend(title="...")` or `mh.label.add_text()`.
 
 ### Both PDF and PNG
 
@@ -153,17 +124,15 @@ Save every figure in both formats:
 fig.savefig("output.pdf", bbox_inches="tight", dpi=200, transparent=True)
 fig.savefig("output.png", bbox_inches="tight", dpi=200, transparent=True)
 ```
-PDF for the analysis note, PNG for quick inspection. Always `bbox_inches="tight"`.
+PDF for analysis note, PNG for quick inspection. Always `bbox_inches="tight"`.
 
 ### No tight_layout
 
-Never use `tight_layout()` or `constrained_layout=True` with mplhep. They
-conflict with mplhep label positioning. Use `bbox_inches="tight"` at save
-time instead.
+Never use `tight_layout()` or `constrained_layout=True` with mplhep. Conflicts with mplhep label positioning. Use `bbox_inches="tight"` at save time instead.
 
 ### Close figures
 
-`plt.close(fig)` after saving to prevent memory leaks in long scripts.
+`plt.close(fig)` after saving → prevent memory leaks in long scripts.
 
 ---
 
@@ -191,7 +160,7 @@ mh.cms.label(label="Preliminary", data=True, lumi=<val>, com=13, loc=0, ax=ax)
 
 ### LEP Experiments (ALEPH, DELPHI, L3, OPAL)
 
-Use the mplhep generic label system with CMS style as base:
+Use mplhep generic label system with CMS style as base:
 ```python
 mh.style.use("CMS")
 mh.label.exp_label(
@@ -211,9 +180,7 @@ mh.label.exp_label(
 
 ### Label Stacking Pitfall
 
-When `data=False`, mplhep auto-adds "Simulation" as the left label. Do NOT
-also set `llabel` -- this produces "Simulation Open Simulation". The safe
-pattern is always `data=True` with explicit `llabel`:
+When `data=False`, mplhep auto-adds "Simulation" as left label. Do NOT also set `llabel` → produces "Simulation Open Simulation". Safe pattern = always `data=True` with explicit `llabel`:
 - `data=True, llabel="Open Data"` for data
 - `data=True, llabel="Open Simulation"` for MC
 - `data=True, llabel=""` for non-open contexts
@@ -231,29 +198,23 @@ pattern is always `data=True` with explicit `llabel`:
 | Belle/BaBar | GeV | GeV | none |
 | LEP (general) | varies | GeV | check pT magnitude |
 
-Rule of thumb: if typical lepton pT ~ 40, units are GeV; if ~ 40000, MeV.
+Rule of thumb: typical lepton pT ~ 40 → units = GeV; ~ 40000 → MeV.
 
 ---
 
 ## Standard Plot Types
 
 ### Distribution plot
-Data as black circles with error bars (`mh.histplot(..., histtype="errorbar")`),
-MC as filled/stacked histograms. Experiment label, axis labels with units,
-legend via `mpl_magic`.
+Data as black circles with error bars (`mh.histplot(..., histtype="errorbar")`), MC as filled/stacked histograms. Experiment label, axis labels with units, legend via `mpl_magic`.
 
 ### Fit result (two-panel)
-Main panel: data + fit curve + background component. Ratio/pull panel below
-with `sharex=True` and `hspace=0`. Pull panel shows horizontal lines at 0
-and +/-2.
+Main panel: data + fit curve + background component. Ratio/pull panel below with `sharex=True` and `hspace=0`. Pull panel shows horizontal lines at 0 and +/-2.
 
 ### Cut-flow (barh)
-Horizontal bar chart with cut names on y-axis, event counts on x-axis.
-Monotonically decreasing.
+Horizontal bar chart: cut names on y-axis, event counts on x-axis. Monotonically decreasing.
 
 ### N-1 plot
-Apply ALL cuts except the one being shown. Vertical dashed line at the
-cut threshold. Show signal and background separately.
+Apply ALL cuts except one being shown. Vertical dashed line at cut threshold. Show signal and background separately.
 
 ---
 
@@ -287,17 +248,13 @@ cut threshold. Show signal and background separately.
 | Counts | `Events / X GeV` |
 | Cross-section | `$\sigma$ [pb]` |
 
-Always include units in brackets. For y-axis bin normalization, round the
-bin width to a clean value (0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10, ...).
-If the natural width is ugly, either adjust binning or omit the width.
+Always include units in brackets. Y-axis bin normalization → round bin width to clean value (0.01, 0.05, 0.1, 0.5, 1, 2, 5, 10, ...). Natural width ugly → adjust binning or omit width.
 
 ---
 
-## Sizing Rules for the Analysis Note
+## Sizing Rules for Analysis Note
 
-The pandoc preamble sets default figure height to `0.45\linewidth`.
-Height-based sizing keeps the plot area consistent between 1D histograms
-and 2D plots with colorbars.
+Pandoc preamble sets default figure height to `0.45\linewidth`. Height-based sizing keeps plot area consistent between 1D histograms and 2D plots with colorbars.
 
 | Plot type | matplotlib figsize | AN height | Notes |
 |-----------|-------------------|-----------|-------|
@@ -307,53 +264,37 @@ and 2D plots with colorbars.
 | Side-by-side | Compose in LaTeX | 0.45 linewidth each | See below |
 | 2x2 or 3x2 grid | Compose in LaTeX | 0.3 linewidth each | See below |
 
-**Prefer LaTeX subfigures over matplotlib grids.** Produce individual
-(10, 10) figures and compose them in the AN using pandoc-crossref subfigure
-syntax. This gives better control over layout, captions, and
-cross-referencing.
+**Prefer LaTeX subfigures over matplotlib grids.** Produce individual (10, 10) figures, compose in AN using pandoc-crossref subfigure syntax. Better control over layout, captions, cross-referencing.
 
-Exception: tightly-coupled panels sharing a physical x-axis (ratio plots,
-pull panels) should be a single matplotlib figure with `sharex=True` and
-`hspace=0`. If you cannot use `sharex=True`, produce separate outputs.
+Exception: tightly-coupled panels sharing physical x-axis (ratio plots, pull panels) should be single matplotlib figure with `sharex=True` and `hspace=0`. Can't use `sharex=True` → produce separate outputs.
 
 ---
 
 ## Additional Rules
 
-**Suppress offset notation.** Never allow matplotlib's "1e6" offset text.
-Either use `ax.ticklabel_format(axis='y', style='plain')`, absorb the
-multiplier into the axis label, or use a custom formatter.
+**Suppress offset notation.** Never allow matplotlib's "1e6" offset text. Use `ax.ticklabel_format(axis='y', style='plain')`, absorb multiplier into axis label, or use custom formatter.
 
-**Log scale.** Use `ax.set_yscale("log")` when the y-axis range spans more
-than 2 orders of magnitude. Log y-minimum: 0.5 or 1 (never 0).
+**Log scale.** `ax.set_yscale("log")` when y-axis range spans > 2 orders of magnitude. Log y-minimum: 0.5 or 1 (never 0).
 
 **Deterministic.** `np.random.seed(42)` if any randomness.
 
-**2D equal-aspect.** When both axes use the same coordinate type, set
-`ax.set_aspect('equal')` so bins render as squares.
+**2D equal-aspect.** Both axes same coordinate type → `ax.set_aspect('equal')` so bins render as squares.
 
-**Axis limits.** Set tight to the data range. No large empty regions.
+**Axis limits.** Tight to data range. No large empty regions.
 
-**Text labels must be publication-quality.** No code variable names or Python
-identifiers in axis labels, legend entries, or tick labels. "Energy-dep.
-efficiency" not "efficiency_energy_dep".
+**Publication-quality text labels.** No code variable names or Python identifiers in axis labels, legend entries, tick labels. "Energy-dep. efficiency" not "efficiency_energy_dep".
 
-**Ratio panel tick collision.** Hide the main panel's x-axis tick labels with
-`ax.tick_params(labelbottom=False)`. Set ratio panel y-limits with margin
-to avoid crowding at the boundary.
+**Ratio panel tick collision.** Hide main panel x-axis tick labels with `ax.tick_params(labelbottom=False)`. Set ratio panel y-limits with margin to avoid crowding at boundary.
 
-**Y-axis bin width labels.** Round to clean values. Non-round bin widths in
-labels are Category B.
+**Y-axis bin width labels.** Round to clean values. Non-round bin widths in labels = Category B.
 
-**Ratio panel uncertainty bands.** When showing an uncertainty band, describe
-it in the legend or caption. Unexplained bands are Category B. Suspiciously
-flat bands (constant width) warrant investigation.
+**Ratio panel uncertainty bands.** Uncertainty band shown → describe in legend or caption. Unexplained bands = Category B. Suspiciously flat bands (constant width) warrant investigation.
 
 ---
 
 ## Lint Script Integration
 
-Run `pixi run lint-plots` before committing. The lint script checks:
+Run `pixi run lint-plots` before committing. Lint script checks:
 
 ```python
 # Mandatory violations -- any match is a failure
@@ -374,8 +315,7 @@ checks = [
 # sharex ratio plot with exp_label but no Axis 0 suppression
 ```
 
-Additionally, grep all label/xlabel/ylabel strings for underscores outside
-LaTeX math mode. Code variable names in rendered labels are Category A.
+Also grep all label/xlabel/ylabel strings for underscores outside LaTeX math mode. Code variable names in rendered labels = Category A.
 
 ---
 
@@ -397,27 +337,27 @@ These patterns in plotting scripts indicate likely defects:
 
 ---
 
-## Embedding in the Analysis Note
+## Embedding in Analysis Note
 
-All figures are embedded inline at the point of discussion:
+All figures embedded inline at point of discussion:
 ```markdown
 ![Figure N: caption](relative/path.pdf)
 ```
 
 Rules:
-- Place the image immediately after the paragraph that discusses it
-- Use relative paths from the analysis workspace root
-- Number figures sequentially throughout the document
-- PDF for the AN source, PNG for review and quick inspection
-- Caption follows the format: `<Plot name>. <Context and conclusion.>`
-- Captions are 2--4 sentences, self-contained
-- Do not restate what is already in the legend or axis labels
+- Place image immediately after discussing paragraph
+- Relative paths from analysis workspace root
+- Number figures sequentially throughout document
+- PDF for AN source, PNG for review and quick inspection
+- Caption format: `<Plot name>. <Context and conclusion.>`
+- Captions 2--4 sentences, self-contained
+- Don't restate what's already in legend or axis labels
 
 ---
 
 ## Output Format Summary
 
-- Default: PNG for inspection, PDF for publication and the AN
+- Default: PNG for inspection, PDF for publication and AN
 - Resolution: dpi=200 minimum (300 for final publication)
 - Always `bbox_inches="tight"`, `transparent=True`
 - Filename convention: `outputs/figures/<descriptive_name>.{pdf,png}`

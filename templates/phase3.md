@@ -6,8 +6,8 @@ Type: {{analysis_type}}
 
 ## Objective
 
-Implement selection, background estimation, and corrections. Carry
-both Phase 1 approaches through quantitative comparison. Validate with
+Implement selection, background estimation, corrections. Carry both
+Phase 1 approaches through quantitative comparison. Validate with
 closure and stress tests. Implement systematic variations.
 
 ---
@@ -18,10 +18,10 @@ closure and stress tests. Implement systematic variations.
 
 1. **Baseline cuts:** trigger (document prescales and turn-on curves),
    object multiplicity, loose PID, geometric acceptance, overlap removal.
-   Document every cut with its physics motivation.
+   Document every cut with physics motivation.
 
 2. **Analysis-specific selection** for both Phase 1 approaches.
-   Start loose, tighten incrementally. Never optimize toward a known
+   Start loose, tighten incrementally. Never optimize toward known
    answer.
 
 3. **Cut-flow tables** per approach:
@@ -30,36 +30,36 @@ closure and stress tests. Implement systematic variations.
    |-----|-------:|-------------:|----------------:|------------:|--------------:|
    | ... | ... | ... | ... | ... | ... |
 
-4. **N-1 plots.** For each cut variable, plot with all other cuts applied.
-   Vertical dashed line at the threshold. Show signal and background
-   separately. Verify the boundary sits where signal/background separate.
+4. **N-1 plots.** Per cut variable, plot with all other cuts applied.
+   Vertical dashed line at threshold. Show signal and background
+   separately. Verify boundary sits where signal/background separate.
 
-5. **Control regions.** One per major background, orthogonal to the signal
+5. **Control regions.** One per major background, orthogonal to signal
    region. Validate data/MC agreement in each CR.
 
 ### 3b. Approach Comparison
 
-6. **Quantitative comparison** of both approaches on a common metric
-   (expected significance, S/sqrt(B), or sensitivity). Select the
-   primary; the secondary becomes a Phase 4 cross-check.
+6. **Quantitative comparison** of both approaches on common metric
+   (expected significance, S/sqrt(B), or sensitivity). Select primary;
+   secondary → Phase 4 cross-check.
 
 ### 3c. Validation
 
 7. **Closure test.** Full chain on MC pseudo-data with known truth.
    Must recover injected signal: chi2/ndf < 3, p > 0.05.
 
-8. **Stress test.** Reweight MC kinematics and verify recovery. Tests
+8. **Stress test.** Reweight MC kinematics, verify recovery. Tests
    robustness against data/MC modeling differences.
 
-9. **Failure remediation.** If either test fails, follow the remediation
+9. **Failure remediation.** If either test fails, follow remediation
    protocol (at least 3 distinct attempts):
-   1. Check the formula (dimensional consistency, limiting cases)
-   2. Check the inputs (correct branches, units, weights)
+   1. Check formula (dimensional consistency, limiting cases)
+   2. Check inputs (correct branches, units, weights)
    3. Alternative binning (coarser and finer)
    4. Different regularization/fit config
    5. Different MC generator or tune
    6. Different method (secondary approach from Phase 1)
-   All attempts exhausted -> document quantitatively, escalate.
+   All attempts exhausted → document quantitatively, escalate.
 
 ### 3d. MVA (if applicable)
 
@@ -71,12 +71,12 @@ closure and stress tests. Implement systematic variations.
 
 ### 3e. Systematic Variations
 
-12. **Implement every variation** from the Phase 1 systematic catalog.
+12. **Implement every variation** from Phase 1 systematic catalog.
     Per source: up/down variation, rerun selection, record effect on
     yield and shape.
 
-13. **Organize by category** (experimental/theoretical/modeling) in a
-    format Phase 4 can ingest into the statistical model.
+13. **Organize by category** (experimental/theoretical/modeling) in
+    format Phase 4 can ingest into statistical model.
 
 ---
 

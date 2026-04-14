@@ -2,24 +2,23 @@
 
 Type: {{analysis_type}}
 
-**METHODOLOGY IS FROZEN.** Human gate approved the analysis at the end
-of Phase 5. No changes to selection, fit model, systematic treatment,
-binning, or operating points. Configuration hash must match the
-approved version. Any methodology change requires returning through
-the human gate.
+**METHODOLOGY IS FROZEN.** Human gate approved analysis at end of
+Phase 5. No changes to selection, fit model, systematic treatment,
+binning, or operating points. Configuration hash must match approved
+version. Methodology change → return through human gate.
 
 ---
 
 ## Objective
 
-Execute the human-approved, methodology-frozen analysis on the full
-dataset. Produce observed results, diagnostics, and anomaly assessment.
+Execute human-approved, methodology-frozen analysis on full dataset.
+Produce observed results, diagnostics, anomaly assessment.
 
 ## Tasks
 
-1. **Full dataset, frozen configuration.** Run the identical analysis
-   pipeline from Phase 4b on the complete dataset. Configuration hash
-   verified against the approved version before execution begins.
+1. **Full dataset, frozen configuration.** Run identical pipeline from
+   Phase 4b on complete dataset. Configuration hash verified against
+   approved version before execution.
 
 2. **Post-fit diagnostics:**
    - Pre/post-fit distribution overlays
@@ -35,7 +34,7 @@ dataset. Produce observed results, diagnostics, and anomaly assessment.
 4. **Anomaly assessment:** unexpected features, |pull| > 3, tension
    with cross-checks, >3 sigma excesses or deficits. All documented
    with quantitative comparison to Phase 4a expected and Phase 4b
-   10% validation results.
+   10% validation.
 
 5. **Final significance/limits** per `techniques/statistics.md`:
    - Measurements: value +/- stat +/- syst
@@ -55,22 +54,21 @@ dataset. Produce observed results, diagnostics, and anomaly assessment.
 ## Review
 
 **1-bot.** Critical + Plot Validator. Checks execution only --
-methodology was already approved.
+methodology already approved.
 
-**Escalation:** if observed result deviates > 2 sigma from expected
-(Phase 4a), review automatically escalates to **4-bot** (Physics +
-Critical + Constructive + Arbiter).
+**Escalation:** observed result deviates > 2 sigma from expected
+(Phase 4a) → review auto-escalates to **4-bot** (Physics + Critical +
+Constructive + Arbiter).
 
 ## What you MUST NOT do
 
 - Change any selection cut, fit model, or systematic treatment
 - Re-optimize operating points or binning
 - Add or remove systematic sources
-- Modify the background estimation method
-- Change the signal model or interpretation
+- Modify background estimation method
+- Change signal model or interpretation
 
-If any of the above is needed, the analysis must return to the human
-gate with a regression ticket.
+Any of above needed → return to human gate with regression ticket.
 
 ## References
 

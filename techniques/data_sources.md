@@ -13,13 +13,13 @@
 
 ## Search Strategy
 
-When looking for data for an analysis, follow these steps:
+When looking for data:
 
-1. **Web search** for the experiment's open data portal and documentation
-2. **Fetch the portal page** and read available dataset descriptions
-3. **Find getting-started guides** -- these show the expected workflow and data format
-4. **Identify specific datasets** relevant to the physics process of interest
-5. **Check for simplified ntuples** -- many experiments provide reduced formats that are much easier to work with than raw data
+1. **Web search** for experiment's open data portal and documentation
+2. **Fetch portal page** and read available dataset descriptions
+3. **Find getting-started guides** -- show expected workflow and data format
+4. **Identify specific datasets** relevant to physics process of interest
+5. **Check for simplified ntuples** -- many experiments provide reduced formats, much easier than raw data
 
 ## Key Documentation URLs
 
@@ -55,7 +55,7 @@ xrdcp root://eospublic.cern.ch//eos/opendata/cms/Run2015D/DoubleMuon/NANOAOD/fil
 
 ## Verification
 
-After downloading, always verify the file is readable and contains the expected structure:
+After downloading, always verify file readable and contains expected structure:
 
 ```python
 import uproot
@@ -98,12 +98,12 @@ print(f"Entries: {len(pt)}, min: {pt.min()}, max: {pt.max()}")
 
 - File extensions: `.sdst`, `.xsdst`
 - Format: Fortran-based, not directly readable with ROOT or uproot
-- Container required: use the DELPHI software environment
+- Container required: use DELPHI software environment
 - Simplified ntuples may be available for some analyses
 
 ## Data Manifest Template
 
-Before starting analysis, fill out this manifest for each dataset:
+Before starting analysis, fill out manifest for each dataset:
 
 ```
 Source:           [experiment name and portal URL]
@@ -121,11 +121,11 @@ Notes:            [anything unusual about the data]
 
 ## Always Start with ONE File
 
-When beginning a new analysis:
+When beginning new analysis:
 
-- Download a single file first
-- Verify it opens and contains the expected branches
-- Run your analysis code on that one file to confirm everything works
-- Only then scale up to the full dataset
+- Download single file first
+- Verify opens and contains expected branches
+- Run analysis code on that one file → confirm everything works
+- Only then scale up to full dataset
 
-This avoids wasting time downloading gigabytes of data only to discover a format mismatch or missing branches.
+Avoids wasting time downloading gigabytes only to discover format mismatch or missing branches.

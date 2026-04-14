@@ -1,9 +1,6 @@
 # Code Quality Standards
 
-These standards govern all analysis code in an apexAI project. The
-overriding principle is KISS/YAGNI: scripts, not frameworks. No CLIs,
-config systems, or plugin architectures. Every script is a standalone
-unit that does one thing and can be run with `pixi run <task>`.
+Standards govern all analysis code in apexAI project. Overriding principle = KISS/YAGNI: scripts, not frameworks. No CLIs, config systems, plugin architectures. Every script = standalone unit doing one thing, runnable with `pixi run <task>`.
 
 ---
 
@@ -23,15 +20,11 @@ Examples:
 
 ### Branching
 
-One branch per phase (`phase1_strategy`, `phase2_selection`, etc.).
-Merge to main after review passes. Never force-push to main.
+One branch per phase (`phase1_strategy`, `phase2_selection`, etc.). Merge to main after review passes. Never force-push to main.
 
 ### Commit Frequency
 
-Commit after every meaningful step. Commits are checkpoints. If the
-process crashes, resume from the last commit. A meaningful step is:
-one script working, one set of plots produced, one systematic evaluated,
-one bug fixed.
+Commit after every meaningful step. Commits = checkpoints. Process crashes → resume from last commit. Meaningful step = one script working, one set of plots produced, one systematic evaluated, one bug fixed.
 
 ---
 
@@ -39,18 +32,13 @@ one bug fixed.
 
 ### KISS/YAGNI
 
-Write scripts, not frameworks. No CLIs. No config files that need parsing.
-No plugin architectures. No abstract base classes for "future extensibility."
-The analysis is the product; the code is a tool.
+Write scripts, not frameworks. No CLIs. No config files needing parsing. No plugin architectures. No abstract base classes for "future extensibility." Analysis = product; code = tool.
 
-A script that processes events and writes histograms to JSON is correct.
-A framework with `AbstractEventProcessor`, `ConfigLoader`, and
-`PluginRegistry` that does the same thing is wrong.
+Script processing events and writing histograms to JSON = correct. Framework with `AbstractEventProcessor`, `ConfigLoader`, `PluginRegistry` doing same thing = wrong.
 
 ### Output Paths via __file__
 
-Scripts must resolve output paths relative to the script file, not the
-current working directory:
+Scripts must resolve output paths relative to script file, not current working directory:
 
 ```python
 HERE = Path(__file__).resolve().parent
@@ -58,16 +46,11 @@ OUT = HERE.parent / "outputs"
 FIG = OUT / "figures"
 ```
 
-This ensures `pixi run py path/to/script.py` produces the same output
-regardless of the shell's CWD. CWD-relative paths like
-`Path("phase4_inference/outputs/figures")` break when invoked from a
-different directory.
+Ensures `pixi run py path/to/script.py` produces same output regardless of shell CWD. CWD-relative paths like `Path("phase4_inference/outputs/figures")` break when invoked from different directory.
 
 ### Columnar Processing
 
-Arrays + boolean masks, not event loops. Use awkward-array for jagged
-structures, numpy for flat arrays. Named boolean masks for cuts, never
-modify arrays in place.
+Arrays + boolean masks, not event loops. awkward-array for jagged structures, numpy for flat arrays. Named boolean masks for cuts, never modify arrays in place.
 
 ```python
 # Correct: columnar
@@ -83,8 +66,7 @@ for i in range(len(events)):
 
 ### Logging, Not Printing
 
-Use `logging` + `rich.logging.RichHandler`. No bare `print()` statements.
-Ruff rule `T201` enforces this.
+Use `logging` + `rich.logging.RichHandler`. No bare `print()`. Ruff rule `T201` enforces this.
 
 ```python
 import logging
@@ -100,59 +82,49 @@ log = logging.getLogger(__name__)
 
 ### Linting
 
-Ruff + pre-commit for formatting and linting on every commit. The pre-commit
-hook must pass before any commit lands.
+Ruff + pre-commit for formatting and linting on every commit. Pre-commit hook must pass before any commit lands.
 
 ---
 
 ## Analysis/Plotting Separation
 
-Analysis code and plotting code must be independent scripts. They are never
-entangled in the same file.
+Analysis code and plotting code = independent scripts. Never entangled in same file.
 
-**Analysis scripts** process events and produce machine-readable artifacts:
-JSON, NPZ, CSV. Histograms, yields, fit results, systematic shifts.
+**Analysis scripts** process events → machine-readable artifacts: JSON, NPZ, CSV. Histograms, yields, fit results, systematic shifts.
 
-**Plotting scripts** read those artifacts and produce figures: PDF, PNG.
+**Plotting scripts** read artifacts → figures: PDF, PNG.
 
 Benefits:
-1. Plots are rerunnable. Tweaking a legend or color does not require
-   re-running the analysis chain.
-2. Artifacts are the handoff. If a plotting script crashes, no data is lost.
-3. Review is cleaner. Analysis logic is audited without matplotlib boilerplate.
+1. Plots rerunnable. Tweaking legend or color doesn't require re-running analysis chain.
+2. Artifacts = handoff. Plotting script crashes → no data lost.
+3. Review cleaner. Analysis logic audited without matplotlib boilerplate.
 
 Rules:
 - Analysis scripts write to `outputs/` (JSON, NPZ).
-- Plotting scripts read from `outputs/` and write to `outputs/figures/`.
-- Each plotting script has its own pixi task.
-- Plotting scripts must NOT call `uproot.open()` or process ROOT files
-  directly (exception: quick data/MC overlays during Phase 2 exploration).
+- Plotting scripts read from `outputs/`, write to `outputs/figures/`.
+- Each plotting script has own pixi task.
+- Plotting scripts must NOT call `uproot.open()` or process ROOT files directly (exception: quick data/MC overlays during Phase 2 exploration).
 
 ---
 
 ## Pixi Task Graph
 
-Every script maps to a pixi task. `pixi run all` reproduces the full
-analysis from raw data to final result.
+Every script maps to pixi task. `pixi run all` reproduces full analysis from raw data to final result.
 
 Requirements for `all`:
-- Runs every script in the correct order
-- Is idempotent (running twice produces the same output)
-- Includes systematic variation reruns, not just the nominal
-- Produces all figures, tables, and machine-readable outputs
+- Runs every script in correct order
+- Idempotent (running twice → same output)
+- Includes systematic variation reruns, not just nominal
+- Produces all figures, tables, machine-readable outputs
 - Completes without manual intervention
 
-Task names are human-readable. Scripts are idempotent (fixed seeds, fixed
-output paths). Split scripts exceeding ~5 min into stages with intermediate
-outputs. Update `pixi.toml` whenever scripts are added or removed.
+Task names human-readable. Scripts idempotent (fixed seeds, fixed output paths). Split scripts exceeding ~5 min into stages with intermediate outputs. Update `pixi.toml` whenever scripts added or removed.
 
 ---
 
 ## Testing
 
-Focus on structural bugs (wrong branch, wrong weight, inverted cut). These
-are catastrophic because they require re-running everything and produce
-plausible-looking wrong numbers.
+Focus on structural bugs (wrong branch, wrong weight, inverted cut). Catastrophic because they require re-running everything → produce plausible-looking wrong numbers.
 
 ### Always Run
 
@@ -170,12 +142,9 @@ plausible-looking wrong numbers.
 | Systematic direction | Up variation should shift result up |
 | Parallel outputs not identical | Fork/threading bug if N inputs produce N identical outputs |
 
-### The Parallel Identity Check
+### Parallel Identity Check
 
-If a parallel processing step produces N independent results (per-file
-histograms, per-year densities), verify they are not bit-for-bit identical.
-Identical outputs from independent inputs indicate a fork/threading bug
-where child processes return cached data from the parent.
+Parallel processing step produces N independent results (per-file histograms, per-year densities) → verify not bit-for-bit identical. Identical outputs from independent inputs = fork/threading bug where child processes return cached parent data.
 
 ---
 
@@ -187,7 +156,7 @@ where child processes return cached data from the parent.
 | Arrays | awkward-array, numpy | Columnar; awkward for jagged, numpy for flat |
 | Histogramming | hist, boost-histogram | ND axes for systematic variations |
 | Statistical model | pyhf, cabinetry | HistFactory JSON workspaces |
-| Unbinned fits | zfit | When binned HistFactory is insufficient |
+| Unbinned fits | zfit | When binned HistFactory insufficient |
 | MVA | xgboost, scikit-learn | BDTs via xgboost; sklearn for preprocessing |
 | Plotting | matplotlib, mplhep | See plotting.md for all figure standards |
 | Columnar model | coffea | NanoEvents, PackedSelection (optional) |
@@ -203,8 +172,7 @@ where child processes return cached data from the parent.
 
 ## Scale-Out Rules
 
-Estimate before running: input size, per-event cost on a 1000-event slice,
-peak memory.
+Estimate before running: input size, per-event cost on 1000-event slice, peak memory.
 
 | Estimated time | Mode |
 |----------------|------|
@@ -212,37 +180,29 @@ peak memory.
 | 2--15 min | `ProcessPoolExecutor` or multicore |
 | > 15 min | SLURM: `sbatch --wait` or `--array` |
 
-Prefer the simplest pattern that works. Never wait >15 min on a login node
-when SLURM exists.
+Prefer simplest pattern that works. Never wait >15 min on login node when SLURM exists.
 
 ### Multiprocessing Safety
 
-When using `ProcessPoolExecutor` with libraries that use OpenMP or threading
-(fastjet, ROOT, numpy with MKL), always set:
+When using `ProcessPoolExecutor` with libraries using OpenMP or threading (fastjet, ROOT, numpy with MKL), always set:
 
 ```python
 import multiprocessing
 multiprocessing.set_start_method("forkserver", force=True)
 ```
 
-The default `fork` method copies the parent's thread state into children.
-Libraries with active thread pools can produce silently wrong results
-where children return cached parent data instead of computing fresh values.
+Default `fork` method copies parent's thread state into children. Libraries with active thread pools → silently wrong results where children return cached parent data instead of computing fresh values.
 
 ---
 
 ## Debug Code and Diagnostics
 
-Debug scripts are prefixed with `debug_` or placed in `scratch/`. They are
-never included in the `all` task.
+Debug scripts prefixed with `debug_` or placed in `scratch/`. Never included in `all` task.
 
-But debug outputs are valuable -- preserve them:
-- `outputs/` -- production artifacts (JSON, NPZ), enter the analysis chain
-- `outputs/figures/` -- publication-quality figures for the AN
-- `outputs/debug/` -- diagnostic figures, not in the AN, preserved and
-  referenced in the experiment log
+Debug outputs valuable -- preserve them:
+- `outputs/` -- production artifacts (JSON, NPZ), enter analysis chain
+- `outputs/figures/` -- publication-quality figures for AN
+- `outputs/debug/` -- diagnostic figures, not in AN, preserved and referenced in experiment log
 - `logs/` -- session logs, experiment log entries
 
-Anything that informed a decision should be traceable. "I chose 8 bins
-because the 12-bin version had empty bins" is only useful if the 12-bin
-plot is in `outputs/debug/` and referenced in the experiment log.
+Anything informing decision should be traceable. "Chose 8 bins because 12-bin version had empty bins" only useful if 12-bin plot in `outputs/debug/` and referenced in experiment log.
