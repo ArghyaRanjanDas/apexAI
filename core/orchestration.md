@@ -29,6 +29,91 @@ The orchestrator is a thin coordinator. Its job is strictly:
 
 ---
 
+## Phase Execution Loop
+
+The orchestrator runs the following loop for each phase in the
+mandatory sequence. This is the core coordination algorithm.
+
+```
+SEQUENCE = [0, 1, 2, 3, 4a, 4b, 5, VC1_full, VC2_full,
+            HUMAN_GATE, 6, 7, VC1_light, VC2_light]
+
+for phase in SEQUENCE:
+
+    # 1. PRE-CHECK
+    Verify prior phase artifact exists and review verdict = PASS.
+    If not, halt with error (never skip a missing gate).
+
+    # 2. SPAWN EXECUTOR
+    Assemble 3-layer context (see Context Assembly below).
+    Spawn executor subagent with phase CLAUDE.md + upstream artifacts.
+    Executor produces artifact + structured verdict.
+
+    # 3. REVIEW
+    Spawn reviewer(s) per phase review tier (see core/review.md):
+      Phase 0, 2       → Self + Plot Validator
+      Phase 1           → 4-bot (Physics + Critical + Constructive + Arbiter)
+      Phase 3, 6        → 1-bot (Critical + Plot Validator)
+      Phase 4a, 4b      → 4-bot+bib (above + Plot Validator + BibTeX)
+      Phase 5, 7        → 5-bot (above + Rendering)
+      VC1 full/light    → 5 ARC specialists (parallel)
+      VC2 full/light    → 5 independent reviewers (parallel, isolated)
+    Reviewers produce findings with A/B/C categories.
+
+    # 4. FIX LOOP
+    while A-items or B-items remain:
+        Spawn Fixer with finding + artifact.
+        Re-review: A-items by FRESH reviewer, B by same reviewer.
+        Respect iteration caps (review.md Section 5):
+          4/5-bot: warn@3, strong-warn@5, hard-cap@10
+          1-bot:   warn@2, escalate@3
+        If hard cap hit → file regression ticket, regress to earlier phase.
+
+    # 5. COMMIT
+    Commit phase artifacts to repository.
+    Append to experiment log: phase, session, verdict, rationale.
+
+    # 6. GATE CHECK
+    If phase = VC2_full → halt for HUMAN GATE.
+      Present package (see core/blinding.md).
+      Wait for APPROVE / ITERATE / REGRESS / PAUSE.
+      Only APPROVE advances to Phase 6.
+    If phase = VC2_light → analysis complete. Produce final deliverables.
+    Otherwise → advance to next phase in SEQUENCE.
+
+    # 7. REGRESSION CHECK
+    After every review verdict, check regression triggers (review.md
+    Section 6). If triggered:
+      Investigator traces root cause → REGRESSION_TICKET.md
+      Fixer re-runs target phase
+      All downstream phases re-execute and re-review
+      Resume at triggering phase
+```
+
+### Decision Tree: What To Do After Review
+
+```
+Verdict = PASS, no A/B items?
+  → COMMIT, advance to next phase.
+
+Verdict has B-items only?
+  → Spawn Fixer, re-review by same reviewer, loop.
+
+Verdict has A-items?
+  → Spawn Fixer, re-review by FRESH reviewer, loop.
+
+Hard cap reached?
+  → File regression ticket, regress to earlier phase.
+
+Regression trigger matched?
+  → Investigator traces, fix at origin, cascade downstream.
+
+Phase = HUMAN GATE and response = REGRESS(N)?
+  → Return to Phase N, re-traverse to gate.
+```
+
+---
+
 ## Context Assembly
 
 Every subagent receives exactly three layers of context, assembled by the
