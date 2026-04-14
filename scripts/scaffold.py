@@ -120,6 +120,13 @@ def scaffold(analysis_dir: Path, analysis_type: str) -> None:
         pixi_path.write_text(template.replace("{name}", variables["name"]))
         print(f"  wrote {pixi_path}")
 
+    # --- preamble.tex (needed by build-pdf task) ---
+    preamble_path = analysis_dir / "preamble.tex"
+    preamble_src = TEMPLATES / "preamble.tex"
+    if not preamble_path.exists() and preamble_src.exists():
+        preamble_path.write_text(preamble_src.read_text())
+        print(f"  wrote {preamble_path}")
+
     # --- Experiment log and retrieval log stubs ---
     for log_name in ["experiment_log.md", "retrieval_log.md"]:
         log_path = analysis_dir / log_name
