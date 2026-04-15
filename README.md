@@ -1,5 +1,9 @@
 # apexAI — Autonomous Physics Experiment with AI
 
+[![Python](https://img.shields.io/badge/Python-%E2%89%A5%203.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Agent Runtime](https://img.shields.io/badge/Agent%20Runtime-Claude%20Code-cc785c?logo=anthropic&logoColor=white)](https://claude.ai/claude-code)
+[![arXiv](https://img.shields.io/badge/arXiv-2603.20179-b31b1b?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2603.20179)
+
 An agent framework for autonomous high energy physics analysis. Given a
 physics prompt and collision data (or just an experiment name), apexAI plans,
 executes, reviews, and documents a publication-quality measurement or search
@@ -21,63 +25,46 @@ executes, reviews, and documents a publication-quality measurement or search
 
 Every number comes from code running on data. Never from recalled knowledge.
 
+## Key features
+
+- **23 agents, 5 groups** — Execution, Review, Adjudication, and two independent Verification Committees (VC1 + VC2) that never see each other's feedback
+- **Staged unblinding** — methodology is frozen before any real data is seen: Asimov dataset, then 10% validation, then full data
+- **MemPalace** — persistent semantic memory (ChromaDB + SQLite) that tracks every measured value with provenance, blocking hallucinated numbers
+- **Ralph Loop** — autonomous iteration framework with per-phase budgets, progress tracking, and stuck detection
+- **Living conventions** — binding domain-specific checklists for each analysis technique (counting, limit-setting, unfolding) that agents must explicitly address
+- **Anti-hallucination by design** — 10-point protocol including fits from histograms only, perturbation tests, dual verification, adversarial red-teaming, and full traceability (script:line for every number)
+
 ## Architecture
 
-```
-                ORCHESTRATOR (thin coordinator — never writes code)
-                       │
-    ┌──────────────────┼───────────────────────────────┐
-    ▼                  ▼                               ▼
- Phase 0            Phase 1-3                       Phase 4
- Acquire            Build                           Measure
- (Data Eng)         (Executor)                      (4a Expected → 4b 10% Validation)
-                       │                               │
-                    Reviews:                        Reviews:
-                    4-bot (Ph1)                      4-bot+bib
-                    Self+PV (Ph2)                      │
-                    1-bot (Ph3)                        ▼
-                                                   Phase 5
-                                                   Draft Note
-                                                   (Scribe)
-                                                      │
-                                                   5-bot review
-                                                      │
-                                              ┌───────┴───────┐
-                                              ▼               ▼
-                                           VC1 full        VC2 full
-                                           (5 ARC          (5 independent
-                                           reviewers)      reviewers)
-                                              │               │
-                                              └───────┬───────┘
-                                                      ▼
-                                              ═══ HUMAN GATE ═══
-                                              (methodology frozen)
-                                                      │
-                                                      ▼
-                                                   Phase 6
-                                                   Full Data
-                                                   (unblinding)
-                                                      │
-                                                   1-bot review
-                                                      │
-                                                      ▼
-                                                   Phase 7
-                                                   Final Note
-                                                      │
-                                                   5-bot review
-                                                      │
-                                              ┌───────┴───────┐
-                                              ▼               ▼
-                                           VC1 light       VC2 light
-                                           (results only,  (reproducibility +
-                                           methodology     adversarial on
-                                           already OK)     full data)
-                                              │               │
-                                              └───────┬───────┘
-                                                      ▼
-                                                   DONE ✓
-                                              Publication-ready
-                                              analysis note
+```mermaid
+flowchart TD
+    ORCH(["<b>ORCHESTRATOR</b><br/><i>thin coordinator — never writes code</i>"])
+
+    ORCH --> P0["<b>Phase 0</b> Acquire<br/><i>Data Engineer</i>"]
+    P0 --> P13["<b>Phase 1–3</b> Build<br/><i>Executor</i><br/>Reviews: 4-bot · Self+PV · 1-bot"]
+    P13 --> P4["<b>Phase 4</b> Measure<br/><i>4a Expected → 4b Validation</i><br/>Reviews: 4-bot + bib"]
+    P4 --> P5["<b>Phase 5</b> Draft Note<br/><i>Scribe</i> · 5-bot review"]
+
+    P5 --> VC1F & VC2F
+
+    subgraph VCF ["Full Verification"]
+        VC1F["<b>VC1</b><br/>5 ARC reviewers"]
+        VC2F["<b>VC2</b><br/>5 independent reviewers"]
+    end
+
+    VC1F & VC2F --> HG{"<b>HUMAN GATE</b><br/><i>methodology frozen</i>"}
+
+    HG --> P6["<b>Phase 6</b> Full Data<br/><i>unblinding</i> · 1-bot review"]
+    P6 --> P7["<b>Phase 7</b> Final Note<br/>5-bot review"]
+
+    P7 --> VC1L & VC2L
+
+    subgraph VCL ["Light Verification"]
+        VC1L["<b>VC1 Light</b><br/>results only"]
+        VC2L["<b>VC2 Light</b><br/>reproducibility + adversarial"]
+    end
+
+    VC1L & VC2L --> DONE(["<b>DONE</b><br/><i>Publication-ready analysis note</i>"])
 ```
 
 **23 agents** organized into five groups:
@@ -165,13 +152,19 @@ For autonomous iteration:
 /ralph-loop "Execute full analysis + verification pipeline. Phase 0-7, then VC1 and VC2. Every number from data." --max-iterations 40 --completion-promise "Both verification committees satisfied"
 ```
 
-## Provenance
+## Provenance & credits
 
 apexAI synthesizes ideas from two complementary frameworks:
+
 - An experiment-agnostic HEP discovery agent with perturbation tests, dual
   verification committees, and persistent semantic memory
-- JFC (Just Furnish Context, arxiv 2603.20179) — a formal phased methodology
-  with tiered multi-agent review, phase regression, and living conventions
+- **[JFC (Just Furnish Context)](https://github.com/jfc-mit/jfc)** — a formal
+  phased methodology with tiered multi-agent review, phase regression, and
+  living conventions
+
+> E. A. Moreno, S. Bright-Thonney, A. Novak, D. Garcia, P. Harris,
+> *"AI Agents Can Already Autonomously Perform Experimental High Energy Physics"*,
+> [arXiv:2603.20179](https://arxiv.org/abs/2603.20179) (2026)
 
 Neither source was copied. Every file was written from scratch as a genuine
 synthesis, organized by what a physicist needs rather than by where the idea
